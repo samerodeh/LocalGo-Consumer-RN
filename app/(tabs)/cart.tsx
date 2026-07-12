@@ -10,7 +10,9 @@ import { RemoteImage } from '../../src/components/RemoteImage';
 import { useCartStore } from '../../src/store/cartStore';
 import { useOrdersStore } from '../../src/store/ordersStore';
 import { useAddressStore } from '../../src/store/addressStore';
+import { useAuthStore } from '../../src/store/authStore';
 import { alTaib, restaurantById } from '../../src/data/restaurants';
+import { publishOrderToDispatch } from '../../src/lib/dispatch';
 
 export default function CartScreen() {
   const lines = useCartStore((s) => s.lines);
@@ -24,6 +26,7 @@ export default function CartScreen() {
 
   const record = useOrdersStore((s) => s.record);
   const defaultAddress = useAddressStore((s) => s.defaultAddress);
+  const currentUser = useAuthStore((s) => s.currentUser);
 
   const [processing, setProcessing] = useState(false);
 
@@ -33,7 +36,8 @@ export default function CartScreen() {
 
     // Snapshot before the cart is cleared on success.
     const rid = restaurantID ?? alTaib.id;
-    const restaurantName = restaurantById(rid)?.name ?? rid;
+    const restaurant = restaurantById(rid);
+    const restaurantName = restaurant?.name ?? rid;
     const snapshot = { lines, subtotal, deliveryFee, total };
 
     // Simulated authorize → capture (the SwiftUI app's PaymentService, minus the network).
@@ -45,6 +49,18 @@ export default function CartScreen() {
       restaurantName,
       deliveryAddress: defaultAddress,
       paymentIntentID: `pi_sim_${Crypto.randomUUID().slice(0, 12)}`,
+    });
+
+    // Best-effort: surface the order on the driver dashboard. Never blocks or
+    // fails checkout — the local record above is the source of truth.
+    void publishOrderToDispatch({
+      ...snapshot,
+      restaurantName,
+      restaurantAddress: restaurant?.address ?? '',
+      customerName: currentUser
+        ? `${currentUser.firstName} ${currentUser.lastName}`.trim()
+        : 'LocalGO Customer',
+      deliveryAddress: defaultAddress,
     });
 
     clear();

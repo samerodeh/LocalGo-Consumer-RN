@@ -6,6 +6,7 @@ export const alTaib: Restaurant = {
   id: 'al-taib',
   name: Partner.name,
   cuisine: Partner.tagline,
+  address: Partner.address,
   logoURL: Partner.logoURL,
   heroImageURL:
     'https://betterresto.s3.us-west-1.wasabisys.com/production/13125/all_dressed_pizza_bb4e2f9ccd.png',

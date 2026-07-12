@@ -17,6 +17,7 @@ import { accentGradient, colors, radius } from '../../src/theme/theme';
 import { DisplayText } from '../../src/components/DisplayText';
 import { GradientButton } from '../../src/components/GradientButton';
 import { useAuthStore } from '../../src/store/authStore';
+import { isSupabaseConfigured } from '../../src/lib/supabase';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -49,6 +50,11 @@ export default function LoginScreen() {
               <Text style={{ color: colors.orange }}>GO</Text>
             </DisplayText>
             <Text style={styles.tagline}>Groceries delivered fast.</Text>
+            {!isSupabaseConfigured && (
+              <View style={styles.demoPill}>
+                <Text style={styles.demoPillText}>Demo mode · sample data</Text>
+              </View>
+            )}
           </View>
 
           <View style={styles.fields}>
@@ -143,6 +149,14 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   tagline: { color: colors.textLight, fontSize: 14, marginTop: 4 },
+  demoPill: {
+    marginTop: 14,
+    backgroundColor: 'rgba(249,115,22,0.15)',
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: 999,
+  },
+  demoPillText: { color: colors.orangeDark, fontSize: 12, fontWeight: '600' },
   fields: { gap: 14 },
   input: {
     backgroundColor: colors.gray100,

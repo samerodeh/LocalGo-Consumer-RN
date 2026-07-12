@@ -6,6 +6,8 @@ export interface Restaurant {
   id: string;
   name: string;
   cuisine: string;
+  /** Street address of the restaurant; used as the driver's pickup location. */
+  address: string;
   logoURL: string | null;
   heroImageURL: string | null;
   /** Ionicon shown when there's no hero/logo image (placeholder partners). */
