@@ -62,6 +62,15 @@ interface AuthState {
   }) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  /** Sends a 6-digit recovery code to the given email via Supabase. */
+  requestPasswordReset: (email: string) => Promise<boolean>;
+  /** Verifies the recovery code and sets the new password. */
+  confirmPasswordReset: (
+    email: string,
+    code: string,
+    newPassword: string,
+    confirmPassword: string,
+  ) => Promise<boolean>;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -254,5 +263,67 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
     await clearSession();
     set({ isLoggedIn: false, currentUser: null, errorMessage: null });
+  },
+
+  requestPasswordReset: async (email) => {
+    set({ errorMessage: null });
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!EMAIL_RE.test(normalizedEmail)) {
+      set({ errorMessage: 'Please enter a valid email address.' });
+      return false;
+    }
+    if (!isSupabaseConfigured || !supabase) {
+      set({ errorMessage: "Password reset isn't available in demo mode." });
+      return false;
+    }
+
+    set({ isLoading: true });
+    const { error } = await supabase.auth.resetPasswordForEmail(normalizedEmail);
+    set({ isLoading: false });
+    if (error) {
+      set({ errorMessage: error.message });
+      return false;
+    }
+    return true;
+  },
+
+  confirmPasswordReset: async (email, code, newPassword, confirmPassword) => {
+    set({ errorMessage: null });
+    if (!code.trim()) {
+      set({ errorMessage: 'Please enter the code we emailed you.' });
+      return false;
+    }
+    const pwIssue = passwordError(newPassword);
+    if (pwIssue) {
+      set({ errorMessage: pwIssue });
+      return false;
+    }
+    if (newPassword !== confirmPassword) {
+      set({ errorMessage: 'Passwords do not match.' });
+      return false;
+    }
+    if (!isSupabaseConfigured || !supabase) {
+      set({ errorMessage: "Password reset isn't available in demo mode." });
+      return false;
+    }
+
+    set({ isLoading: true });
+    const normalizedEmail = email.trim().toLowerCase();
+    const { error: verifyError } = await supabase.auth.verifyOtp({
+      email: normalizedEmail,
+      token: code.trim(),
+      type: 'recovery',
+    });
+    if (verifyError) {
+      set({ isLoading: false, errorMessage: 'That code is invalid or expired. Please request a new one.' });
+      return false;
+    }
+    const { error: updateError } = await supabase.auth.updateUser({ password: newPassword });
+    set({ isLoading: false });
+    if (updateError) {
+      set({ errorMessage: updateError.message });
+      return false;
+    }
+    return true;
   },
 }));

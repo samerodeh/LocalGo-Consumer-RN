@@ -83,6 +83,12 @@ export default function LoginScreen() {
               style={styles.input}
             />
             {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
+            <Pressable
+              style={styles.forgotLink}
+              onPress={() => router.push('/(auth)/forgot-password')}
+            >
+              <Text style={styles.forgotText}>Forgot password?</Text>
+            </Pressable>
           </View>
 
           <GradientButton
@@ -166,6 +172,8 @@ const styles = StyleSheet.create({
     color: colors.navy,
   },
   error: { color: colors.danger, fontSize: 13 },
+  forgotLink: { alignSelf: 'flex-end' },
+  forgotText: { color: colors.orange, fontSize: 13, fontWeight: '600' },
   cta: { marginTop: 20 },
   dividerRow: { flexDirection: 'row', alignItems: 'center', marginVertical: 20 },
   divider: { flex: 1, height: 1, backgroundColor: colors.gray200 },
