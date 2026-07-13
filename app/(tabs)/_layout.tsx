@@ -1,9 +1,10 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '../../src/theme/theme';
+import { useTheme } from '../../src/theme/ThemeContext';
 import { useCartStore } from '../../src/store/cartStore';
 
 export default function TabsLayout() {
+  const { colors } = useTheme();
   const itemCount = useCartStore((s) => s.itemCount());
 
   return (

@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { Address, OrderRecord, StoredUser } from '../types';
+import type { Address, OrderRecord, PaymentCard, StoredUser } from '../types';
 
 /**
  * Thin AsyncStorage layer standing in for the SwiftUI app's SwiftData store +
@@ -12,6 +12,7 @@ const KEYS = {
   session: 'localgo.session',
   orders: (email: string) => `localgo.orders.${email}`,
   addresses: (email: string) => `localgo.addresses.${email}`,
+  cards: (email: string) => `localgo.cards.${email}`,
 };
 
 async function readJSON<T>(key: string, fallback: T): Promise<T> {
@@ -78,4 +79,14 @@ export async function loadAddresses(email: string): Promise<Address[]> {
 
 export async function saveAddresses(email: string, addresses: Address[]): Promise<void> {
   await writeJSON(KEYS.addresses(email.toLowerCase()), addresses);
+}
+
+// MARK: - Payment cards
+
+export async function loadCards(email: string): Promise<PaymentCard[]> {
+  return readJSON<PaymentCard[]>(KEYS.cards(email.toLowerCase()), []);
+}
+
+export async function saveCards(email: string, cards: PaymentCard[]): Promise<void> {
+  await writeJSON(KEYS.cards(email.toLowerCase()), cards);
 }

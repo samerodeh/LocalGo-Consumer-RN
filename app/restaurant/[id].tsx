@@ -9,7 +9,8 @@ import {
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { accentGradient, colors, radius } from '../../src/theme/theme';
+import { accentGradient } from '../../src/theme/theme';
+import { useTheme, type ThemePalette } from '../../src/theme/ThemeContext';
 import { DisplayText } from '../../src/components/DisplayText';
 import { RemoteImage } from '../../src/components/RemoteImage';
 import { restaurantById } from '../../src/data/restaurants';
@@ -20,6 +21,8 @@ import { useCartStore } from '../../src/store/cartStore';
 export default function RestaurantMenuScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const restaurant = restaurantById(String(id));
 
   const lines = useCartStore((s) => s.lines);
@@ -76,7 +79,7 @@ export default function RestaurantMenuScreen() {
               iconSize={22}
               borderRadius={26}
             />
-            <DisplayText size={28} weight="bold">
+            <DisplayText size={28} weight="bold" color={colors.navy}>
               {restaurant.name}
             </DisplayText>
           </View>
@@ -179,8 +182,9 @@ export default function RestaurantMenuScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.offWhite },
+const makeStyles = (colors: ThemePalette) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.offWhite },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   hero: { height: 240, width: '100%' },
   backButton: {

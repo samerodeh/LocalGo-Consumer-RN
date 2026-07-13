@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Image, StyleSheet, View, type ViewStyle, type StyleProp } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '../theme/theme';
+import { useTheme } from '../theme/ThemeContext';
 import type { IoniconName } from '../types';
 
 interface Props {
@@ -23,11 +23,18 @@ export function RemoteImage({
   iconSize = 24,
   borderRadius = 0,
 }: Props) {
+  const { colors } = useTheme();
   const [failed, setFailed] = useState(false);
   const showFallback = !urlString || failed;
 
   return (
-    <View style={[styles.container, { borderRadius }, style]}>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: colors.gray100, borderRadius },
+        style,
+      ]}
+    >
       {showFallback ? (
         <Ionicons name={fallbackIcon} size={iconSize} color={colors.orange} />
       ) : (
@@ -44,7 +51,6 @@ export function RemoteImage({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors.gray100,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',

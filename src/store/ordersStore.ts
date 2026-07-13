@@ -17,6 +17,7 @@ interface OrdersState {
     lines: CartLine[];
     subtotal: number;
     deliveryFee: number;
+    tip: number;
     total: number;
     restaurantID: string;
     restaurantName: string;
@@ -57,6 +58,7 @@ export const useOrdersStore = create<OrdersState>((set, get) => ({
     lines,
     subtotal,
     deliveryFee,
+    tip,
     total,
     restaurantID,
     restaurantName,
@@ -76,6 +78,7 @@ export const useOrdersStore = create<OrdersState>((set, get) => ({
       currency: 'cad',
       subtotalCents: cents(subtotal),
       deliveryFeeCents: cents(deliveryFee),
+      tipCents: cents(tip),
       totalCents: cents(total),
       paymentIntentID,
       items: lines.map((line) => ({

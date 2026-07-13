@@ -10,35 +10,33 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors, radius } from '../../src/theme/theme';
-import { DisplayText } from '../../src/components/DisplayText';
-import { GradientButton } from '../../src/components/GradientButton';
-import { useAuthStore } from '../../src/store/authStore';
+import { colors, radius } from '../src/theme/theme';
+import { DisplayText } from '../src/components/DisplayText';
+import { GradientButton } from '../src/components/GradientButton';
+import { useAuthStore } from '../src/store/authStore';
 
+/**
+ * Reached only via the deep link a password-reset email opens
+ * (localgo://reset-password#access_token=...). By the time this screen
+ * mounts, the root layout's deep-link handler has already exchanged those
+ * tokens for a live recovery session via beginPasswordRecovery(), so all this
+ * screen does is collect + submit the new password against that session.
+ */
 export default function ResetPasswordScreen() {
   const router = useRouter();
-  const { email: emailParam } = useLocalSearchParams<{ email?: string }>();
-  const email = emailParam ?? '';
-  const [code, setCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const { requestPasswordReset, confirmPasswordReset, isLoading, errorMessage, clearError } =
-    useAuthStore();
+  const { resetPassword, isLoggedIn, isLoading, errorMessage, clearError } = useAuthStore();
 
   const handleSubmit = async () => {
-    const success = await confirmPasswordReset(email, code, newPassword, confirmPassword);
+    const success = await resetPassword(newPassword, confirmPassword);
     if (success) {
-      Alert.alert('Password Reset', 'Your password has been updated. You are now signed in.');
-    }
-  };
-
-  const handleResend = async () => {
-    const sent = await requestPasswordReset(email);
-    if (sent) {
-      Alert.alert('Code sent', 'Check your email for the new code.');
+      Alert.alert('Password Reset', 'Your password has been updated.', [
+        { text: 'OK', onPress: () => router.replace(isLoggedIn ? '/(tabs)' : '/(auth)/login') },
+      ]);
     }
   };
 
@@ -60,27 +58,12 @@ export default function ResetPasswordScreen() {
         >
           <View style={styles.header}>
             <DisplayText size={34} weight="heavy">
-              Enter Code
+              Set New Password
             </DisplayText>
-            <Text style={styles.subtitle}>
-              We sent a 6-digit code to {email || 'your email'}. Enter it below with your new
-              password.
-            </Text>
+            <Text style={styles.subtitle}>Choose a new password for your account.</Text>
           </View>
 
           <View style={styles.fields}>
-            <TextInput
-              placeholder="6-digit code"
-              placeholderTextColor={colors.gray400}
-              value={code}
-              onChangeText={(t) => {
-                setCode(t);
-                if (errorMessage) clearError();
-              }}
-              keyboardType="number-pad"
-              maxLength={6}
-              style={styles.input}
-            />
             <TextInput
               placeholder="New password"
               placeholderTextColor={colors.gray400}
@@ -90,6 +73,7 @@ export default function ResetPasswordScreen() {
                 if (errorMessage) clearError();
               }}
               secureTextEntry
+              autoComplete="new-password"
               style={styles.input}
             />
             <TextInput
@@ -101,6 +85,7 @@ export default function ResetPasswordScreen() {
                 if (errorMessage) clearError();
               }}
               secureTextEntry
+              autoComplete="new-password"
               style={styles.input}
             />
             {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
@@ -112,11 +97,6 @@ export default function ResetPasswordScreen() {
             onPress={handleSubmit}
             style={styles.cta}
           />
-
-          <Pressable style={styles.resendLink} onPress={handleResend}>
-            <Text style={styles.mutedText}>Didn't get a code? </Text>
-            <Text style={styles.accentText}>Resend</Text>
-          </Pressable>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -139,12 +119,4 @@ const styles = StyleSheet.create({
   },
   error: { color: colors.danger, fontSize: 13 },
   cta: { marginTop: 20 },
-  resendLink: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingTop: 24,
-  },
-  mutedText: { color: colors.textLight, fontSize: 14 },
-  accentText: { color: colors.orange, fontSize: 14, fontWeight: '600' },
 });
