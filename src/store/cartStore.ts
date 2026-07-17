@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import type { CartLine, MenuItem } from '../types';
 
-const DELIVERY_FEE = 2.99;
+const DELIVERY_FEE = 5;
 
 interface CartState {
   lines: CartLine[];

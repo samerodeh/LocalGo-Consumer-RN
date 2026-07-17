@@ -62,15 +62,13 @@ interface AuthState {
   }) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  /** Sends a 6-digit recovery code to the given email via Supabase. */
+  /** Emails a password-reset link that deep-links back into the app. */
   requestPasswordReset: (email: string) => Promise<boolean>;
-  /** Verifies the recovery code and sets the new password. */
-  confirmPasswordReset: (
-    email: string,
-    code: string,
-    newPassword: string,
-    confirmPassword: string,
-  ) => Promise<boolean>;
+  /** Exchanges the tokens from that deep link for a live (recovery) session,
+   *  which the subsequent resetPassword() call updates the password against. */
+  beginPasswordRecovery: (accessToken: string, refreshToken: string) => Promise<boolean>;
+  /** Sets a new password on the session established by beginPasswordRecovery. */
+  resetPassword: (newPassword: string, confirmPassword: string) => Promise<boolean>;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -259,6 +257,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   logout: async () => {
     if (isSupabaseConfigured && supabase) {
       await supabase.auth.signOut();
+      // Flip state here too rather than waiting on the onAuthStateChange
+      // callback, so the navigation guard releases immediately and reliably.
+      set({ isLoggedIn: false, currentUser: null, errorMessage: null });
       return;
     }
     await clearSession();
@@ -278,7 +279,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
 
     set({ isLoading: true });
-    const { error } = await supabase.auth.resetPasswordForEmail(normalizedEmail);
+    const { error } = await supabase.auth.resetPasswordForEmail(normalizedEmail, {
+      redirectTo: 'localgo://reset-password',
+    });
     set({ isLoading: false });
     if (error) {
       set({ errorMessage: error.message });
@@ -287,12 +290,21 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     return true;
   },
 
-  confirmPasswordReset: async (email, code, newPassword, confirmPassword) => {
-    set({ errorMessage: null });
-    if (!code.trim()) {
-      set({ errorMessage: 'Please enter the code we emailed you.' });
+  beginPasswordRecovery: async (accessToken, refreshToken) => {
+    if (!isSupabaseConfigured || !supabase) return false;
+    const { error } = await supabase.auth.setSession({
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    });
+    if (error) {
+      set({ errorMessage: 'That reset link is invalid or expired. Please request a new one.' });
       return false;
     }
+    return true;
+  },
+
+  resetPassword: async (newPassword, confirmPassword) => {
+    set({ errorMessage: null });
     const pwIssue = passwordError(newPassword);
     if (pwIssue) {
       set({ errorMessage: pwIssue });
@@ -308,20 +320,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
 
     set({ isLoading: true });
-    const normalizedEmail = email.trim().toLowerCase();
-    const { error: verifyError } = await supabase.auth.verifyOtp({
-      email: normalizedEmail,
-      token: code.trim(),
-      type: 'recovery',
-    });
-    if (verifyError) {
-      set({ isLoading: false, errorMessage: 'That code is invalid or expired. Please request a new one.' });
-      return false;
-    }
-    const { error: updateError } = await supabase.auth.updateUser({ password: newPassword });
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
     set({ isLoading: false });
-    if (updateError) {
-      set({ errorMessage: updateError.message });
+    if (error) {
+      set({ errorMessage: error.message });
       return false;
     }
     return true;

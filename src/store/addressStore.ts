@@ -17,6 +17,7 @@ export function addressDisplayName(a: Address): string {
 interface SaveInput {
   id?: string;
   addressLine: string;
+  postalCode?: string;
   latitude?: number;
   longitude?: number;
   addressType?: AddressType;
@@ -92,6 +93,7 @@ export const useAddressStore = create<AddressState>((set, get) => ({
         list[idx] = {
           ...list[idx],
           addressLine: input.addressLine,
+          postalCode: input.postalCode ?? list[idx].postalCode,
           latitude: input.latitude ?? list[idx].latitude,
           longitude: input.longitude ?? list[idx].longitude,
           addressType: input.addressType ?? list[idx].addressType,
@@ -119,6 +121,7 @@ export const useAddressStore = create<AddressState>((set, get) => ({
         longitude: input.longitude ?? 0,
         sortOrder: list.length,
         addressLine: input.addressLine,
+        postalCode: input.postalCode ?? '',
         addressType: input.addressType ?? 'House',
         apartmentSuite: input.apartmentSuite ?? '',
         entryCode: input.entryCode ?? '',

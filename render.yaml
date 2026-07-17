@@ -1,0 +1,37 @@
+# Render Blueprint for the LocalGO FastAPI backend (backend/).
+#
+# This file must live at the REPO ROOT for Render's "New Blueprint Instance"
+# flow to find it, but the service itself only builds/runs from `backend/`
+# (rootDir below) — it never touches the Expo app in this repo.
+#
+# Free plan trade-off: the instance sleeps after ~15 min with no requests and
+# takes 30-50s to wake on the next one. Fine for testing the missing-orders
+# fix; if that cold start becomes annoying with real users, upgrade the plan
+# in the Render dashboard — no config change needed here.
+
+services:
+  - type: web
+    name: localgo-backend
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      # Secrets: set these in the Render dashboard (Environment tab) after
+      # the first deploy. sync: false keeps them out of this committed file,
+      # same reason backend/.env and eas.json's env block are handled the way
+      # they are — nothing secret goes into git.
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: GOER_MODEL
+        value: claude-haiku-4-5

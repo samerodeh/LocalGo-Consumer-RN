@@ -20,13 +20,12 @@ import { useAuthStore } from '../../src/store/authStore';
 export default function ForgotPasswordScreen() {
   const router = useRouter();
   const [email, setEmail] = useState('');
+  const [sent, setSent] = useState(false);
   const { requestPasswordReset, isLoading, errorMessage, clearError } = useAuthStore();
 
   const handleSubmit = async () => {
-    const sent = await requestPasswordReset(email);
-    if (sent) {
-      router.push({ pathname: '/(auth)/reset-password', params: { email: email.trim().toLowerCase() } });
-    }
+    const ok = await requestPasswordReset(email);
+    if (ok) setSent(true);
   };
 
   return (
@@ -45,38 +44,62 @@ export default function ForgotPasswordScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.header}>
-            <DisplayText size={34} weight="heavy">
-              Forgot Password
-            </DisplayText>
-            <Text style={styles.subtitle}>
-              Enter the email on your account and we'll send you a code to reset your password.
-            </Text>
-          </View>
+          {sent ? (
+            <View style={styles.confirmation}>
+              <View style={styles.confirmIcon}>
+                <Ionicons name="mail" size={32} color={colors.white} />
+              </View>
+              <DisplayText size={28} weight="heavy" style={{ marginTop: 16, textAlign: 'center' }}>
+                Check your email
+              </DisplayText>
+              <Text style={styles.confirmBody}>
+                We sent a password reset link to{'\n'}
+                <Text style={{ fontWeight: '700', color: colors.navy }}>{email.trim()}</Text>.
+                {'\n\n'}Tap the link on this device to set a new password — it'll open the app
+                directly.
+              </Text>
+              <Pressable style={styles.resendLink} onPress={handleSubmit}>
+                <Text style={styles.mutedText}>Didn't get it? </Text>
+                <Text style={styles.accentText}>Resend</Text>
+              </Pressable>
+            </View>
+          ) : (
+            <>
+              <View style={styles.header}>
+                <DisplayText size={34} weight="heavy">
+                  Forgot Password
+                </DisplayText>
+                <Text style={styles.subtitle}>
+                  Enter the email on your account and we'll send you a link to reset your
+                  password.
+                </Text>
+              </View>
 
-          <View style={styles.fields}>
-            <TextInput
-              placeholder="Email"
-              placeholderTextColor={colors.gray400}
-              value={email}
-              onChangeText={(t) => {
-                setEmail(t);
-                if (errorMessage) clearError();
-              }}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoComplete="email"
-              style={styles.input}
-            />
-            {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
-          </View>
+              <View style={styles.fields}>
+                <TextInput
+                  placeholder="Email"
+                  placeholderTextColor={colors.gray400}
+                  value={email}
+                  onChangeText={(t) => {
+                    setEmail(t);
+                    if (errorMessage) clearError();
+                  }}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoComplete="email"
+                  style={styles.input}
+                />
+                {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
+              </View>
 
-          <GradientButton
-            title="Send Code"
-            loading={isLoading}
-            onPress={handleSubmit}
-            style={styles.cta}
-          />
+              <GradientButton
+                title="Send Reset Link"
+                loading={isLoading}
+                onPress={handleSubmit}
+                style={styles.cta}
+              />
+            </>
+          )}
 
           <View style={{ flex: 1 }} />
 
@@ -106,6 +129,23 @@ const styles = StyleSheet.create({
   },
   error: { color: colors.danger, fontSize: 13 },
   cta: { marginTop: 20 },
+  confirmation: { alignItems: 'center', paddingTop: 40 },
+  confirmIcon: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: colors.orange,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  confirmBody: {
+    color: colors.textLight,
+    fontSize: 14,
+    lineHeight: 21,
+    textAlign: 'center',
+    marginTop: 14,
+  },
+  resendLink: { flexDirection: 'row', alignItems: 'center', marginTop: 24 },
   backLink: {
     flexDirection: 'row',
     justifyContent: 'center',

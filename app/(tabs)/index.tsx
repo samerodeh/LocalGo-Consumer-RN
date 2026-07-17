@@ -10,19 +10,27 @@ import {
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors, radius } from '../../src/theme/theme';
+import { radius } from '../../src/theme/theme';
+import { useTheme, type ThemePalette } from '../../src/theme/ThemeContext';
 import { DisplayText } from '../../src/components/DisplayText';
 import { RemoteImage } from '../../src/components/RemoteImage';
 import { restaurants } from '../../src/data/restaurants';
 import type { Restaurant } from '../../src/types';
 import { useAuthStore } from '../../src/store/authStore';
 import { useAddressStore, addressDisplayName } from '../../src/store/addressStore';
+import { useOrderTracking } from '../../src/store/useOrderTracking';
+import { OrderTrackingStack } from '../../src/components/OrderTrackingStack';
+// Goer chatbot disabled for now.
+// import { GoerFab } from '../../src/components/goer/GoerFab';
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const [searchText, setSearchText] = useState('');
   const firstName = useAuthStore((s) => s.currentUser?.firstName ?? '');
   const defaultAddress = useAddressStore((s) => s.defaultAddress);
+  const { orders: activeOrders, dismiss } = useOrderTracking();
 
   const results = useMemo(() => {
     const query = searchText.trim().toLowerCase();
@@ -58,10 +66,13 @@ export default function HomeScreen() {
               <Ionicons name="person-circle" size={34} color={colors.orange} />
             </Pressable>
           </View>
-          <DisplayText size={30} weight="bold" style={{ marginTop: 16 }}>
+          <DisplayText size={30} weight="bold" color={colors.navy} style={{ marginTop: 16 }}>
             {greeting}
           </DisplayText>
         </View>
+
+        {/* Live tracking for every in-flight order — each with its own driver chat. */}
+        <OrderTrackingStack orders={activeOrders} onDismiss={dismiss} />
 
         {/* Search */}
         <View style={styles.searchBar}>
@@ -83,7 +94,7 @@ export default function HomeScreen() {
         </View>
 
         {/* Restaurants */}
-        <DisplayText size={22} weight="bold" style={styles.sectionTitle}>
+        <DisplayText size={22} weight="bold" color={colors.navy} style={styles.sectionTitle}>
           Available Partners
         </DisplayText>
 
@@ -99,11 +110,14 @@ export default function HomeScreen() {
                 key={restaurant.id}
                 restaurant={restaurant}
                 onPress={() => router.push(`/restaurant/${restaurant.id}`)}
+                styles={styles}
+                colors={colors}
               />
             ))}
           </View>
         )}
       </ScrollView>
+      {/* <GoerFab /> */}
     </SafeAreaView>
   );
 }
@@ -111,9 +125,13 @@ export default function HomeScreen() {
 function RestaurantCard({
   restaurant,
   onPress,
+  styles,
+  colors,
 }: {
   restaurant: Restaurant;
   onPress: () => void;
+  styles: ReturnType<typeof makeStyles>;
+  colors: ThemePalette;
 }) {
   return (
     <Pressable style={styles.card} onPress={onPress}>
@@ -142,16 +160,26 @@ function RestaurantCard({
         </View>
         <Text style={styles.cardCuisine}>{restaurant.cuisine}</Text>
         <View style={styles.metaRow}>
-          <Meta icon="time-outline" text={restaurant.deliveryTime} />
-          <Meta icon="location-outline" text={restaurant.distance} />
-          <Meta icon="bicycle-outline" text={restaurant.deliveryFee} />
+          <Meta icon="time-outline" text={restaurant.deliveryTime} styles={styles} colors={colors} />
+          <Meta icon="location-outline" text={restaurant.distance} styles={styles} colors={colors} />
+          <Meta icon="bicycle-outline" text={restaurant.deliveryFee} styles={styles} colors={colors} />
         </View>
       </View>
     </Pressable>
   );
 }
 
-function Meta({ icon, text }: { icon: keyof typeof Ionicons.glyphMap; text: string }) {
+function Meta({
+  icon,
+  text,
+  styles,
+  colors,
+}: {
+  icon: keyof typeof Ionicons.glyphMap;
+  text: string;
+  styles: ReturnType<typeof makeStyles>;
+  colors: ThemePalette;
+}) {
   return (
     <View style={styles.meta}>
       <Ionicons name={icon} size={12} color={colors.textLight} />
@@ -162,70 +190,71 @@ function Meta({ icon, text }: { icon: keyof typeof Ionicons.glyphMap; text: stri
   );
 }
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.offWhite },
-  scroll: { paddingBottom: 32 },
-  header: { paddingHorizontal: 16, paddingTop: 8 },
-  headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  deliverTo: {
-    color: colors.orange,
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 0.5,
-    marginBottom: 2,
-  },
-  locationRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  locationText: { color: colors.navy, fontSize: 17, fontWeight: '700', maxWidth: 220 },
-  searchBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    backgroundColor: colors.white,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: colors.gray200,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    marginHorizontal: 16,
-    marginTop: 24,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 2,
-  },
-  searchInput: { flex: 1, fontSize: 14, color: colors.navy },
-  sectionTitle: { marginHorizontal: 16, marginTop: 24, marginBottom: 14 },
-  noResults: { alignItems: 'center', paddingTop: 32, gap: 8 },
-  noResultsText: { color: colors.textLight, fontSize: 14 },
-  cardList: { paddingHorizontal: 16, gap: 16 },
-  card: {
-    backgroundColor: colors.white,
-    borderRadius: radius.lg,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOpacity: 0.07,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 3,
-  },
-  cardHero: { height: 150, width: '100%' },
-  cardLogo: {
-    position: 'absolute',
-    left: 12,
-    bottom: 12,
-    width: 46,
-    height: 46,
-    borderWidth: 2,
-    borderColor: colors.white,
-  },
-  cardBody: { padding: 12, gap: 6 },
-  cardTitleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  cardName: { fontSize: 17, fontWeight: '700', color: colors.navy },
-  ratingRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },
-  ratingText: { fontSize: 13, fontWeight: '700', color: colors.navy },
-  cardCuisine: { fontSize: 14, color: colors.textLight },
-  metaRow: { flexDirection: 'row', gap: 12 },
-  meta: { flexDirection: 'row', alignItems: 'center', gap: 3, flexShrink: 1 },
-  metaText: { fontSize: 12, color: colors.textLight },
-});
+const makeStyles = (colors: ThemePalette) =>
+  StyleSheet.create({
+    safe: { flex: 1, backgroundColor: colors.offWhite },
+    scroll: { paddingBottom: 32 },
+    header: { paddingHorizontal: 16, paddingTop: 8 },
+    headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+    deliverTo: {
+      color: colors.orange,
+      fontSize: 11,
+      fontWeight: '700',
+      letterSpacing: 0.5,
+      marginBottom: 2,
+    },
+    locationRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+    locationText: { color: colors.navy, fontSize: 17, fontWeight: '700', maxWidth: 220 },
+    searchBar: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 10,
+      backgroundColor: colors.white,
+      borderRadius: 999,
+      borderWidth: 1,
+      borderColor: colors.gray200,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      marginHorizontal: 16,
+      marginTop: 24,
+      shadowColor: '#000',
+      shadowOpacity: 0.05,
+      shadowRadius: 8,
+      shadowOffset: { width: 0, height: 3 },
+      elevation: 2,
+    },
+    searchInput: { flex: 1, fontSize: 14, color: colors.navy },
+    sectionTitle: { marginHorizontal: 16, marginTop: 24, marginBottom: 14 },
+    noResults: { alignItems: 'center', paddingTop: 32, gap: 8 },
+    noResultsText: { color: colors.textLight, fontSize: 14 },
+    cardList: { paddingHorizontal: 16, gap: 16 },
+    card: {
+      backgroundColor: colors.white,
+      borderRadius: radius.lg,
+      overflow: 'hidden',
+      shadowColor: '#000',
+      shadowOpacity: 0.07,
+      shadowRadius: 10,
+      shadowOffset: { width: 0, height: 4 },
+      elevation: 3,
+    },
+    cardHero: { height: 150, width: '100%' },
+    cardLogo: {
+      position: 'absolute',
+      left: 12,
+      bottom: 12,
+      width: 46,
+      height: 46,
+      borderWidth: 2,
+      borderColor: colors.white,
+    },
+    cardBody: { padding: 12, gap: 6 },
+    cardTitleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+    cardName: { fontSize: 17, fontWeight: '700', color: colors.navy },
+    ratingRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },
+    ratingText: { fontSize: 13, fontWeight: '700', color: colors.navy },
+    cardCuisine: { fontSize: 14, color: colors.textLight },
+    metaRow: { flexDirection: 'row', gap: 12 },
+    meta: { flexDirection: 'row', alignItems: 'center', gap: 3, flexShrink: 1 },
+    metaText: { fontSize: 12, color: colors.textLight },
+  });

@@ -62,6 +62,7 @@ export interface Address {
   longitude: number;
   sortOrder: number;
   addressLine: string;
+  postalCode: string;
   addressType: AddressType;
   apartmentSuite: string;
   entryCode: string;
@@ -71,6 +72,19 @@ export interface Address {
   personalLabel: PersonalLabel;
   customLabelName: string;
   updatedAt: string;
+}
+
+/** A saved card. Only the last 4 digits are ever persisted — never the full PAN
+ *  or CVV — so there's no sensitive card data at rest. Stand-in for a real
+ *  tokenized payment method (Stripe et al.). */
+export interface PaymentCard {
+  id: string;
+  brand: string;
+  last4: string;
+  expMonth: string;
+  expYear: string;
+  cardholder: string;
+  isDefault: boolean;
 }
 
 export type OrderStatus =
@@ -100,6 +114,7 @@ export interface OrderRecord {
   currency: string;
   subtotalCents: number;
   deliveryFeeCents: number;
+  tipCents: number;
   totalCents: number;
   paymentIntentID: string;
   items: OrderItemRecord[];
@@ -108,4 +123,20 @@ export interface OrderRecord {
   deliveryApartmentSuite: string;
   deliveryInstructions: string;
   deliveryPreference: string;
+}
+
+/** One chat message between a customer and the driver who accepted their
+ *  order. `orderId` is the shared `orders.id` — the order row IS the thread,
+ *  there's no separate conversation object. `senderId` is a Supabase Auth
+ *  uid (customer or driver); the UI decides "mine" vs "theirs" by comparing
+ *  it to the signed-in user's own uid. */
+export interface Message {
+  id: string;
+  orderId: string;
+  senderId: string;
+  body: string;
+  /** Set when the message carries a photo (driver's pickup/drop-off proof). */
+  imageUrl: string | null;
+  createdAt: string;
+  readAt: string | null;
 }
