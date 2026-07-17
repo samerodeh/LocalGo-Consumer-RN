@@ -124,3 +124,19 @@ export interface OrderRecord {
   deliveryInstructions: string;
   deliveryPreference: string;
 }
+
+/** One chat message between a customer and the driver who accepted their
+ *  order. `orderId` is the shared `orders.id` — the order row IS the thread,
+ *  there's no separate conversation object. `senderId` is a Supabase Auth
+ *  uid (customer or driver); the UI decides "mine" vs "theirs" by comparing
+ *  it to the signed-in user's own uid. */
+export interface Message {
+  id: string;
+  orderId: string;
+  senderId: string;
+  body: string;
+  /** Set when the message carries a photo (driver's pickup/drop-off proof). */
+  imageUrl: string | null;
+  createdAt: string;
+  readAt: string | null;
+}

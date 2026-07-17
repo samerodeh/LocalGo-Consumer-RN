@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import * as Crypto from 'expo-crypto';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { radius } from '../../src/theme/theme';
 import { useTheme, type ThemePalette } from '../../src/theme/ThemeContext';
@@ -10,12 +10,12 @@ import { GradientButton } from '../../src/components/GradientButton';
 import { RemoteImage } from '../../src/components/RemoteImage';
 import { ConfirmModal } from '../../src/components/ConfirmModal';
 import { useCartStore } from '../../src/store/cartStore';
-import { useOrdersStore } from '../../src/store/ordersStore';
 import { useAddressStore } from '../../src/store/addressStore';
 import { useAuthStore } from '../../src/store/authStore';
-import { alTaib, restaurantById } from '../../src/data/restaurants';
-import { publishOrderToDispatch } from '../../src/lib/dispatch';
-import { supabase } from '../../src/lib/supabase';
+import { placeOrder } from '../../src/lib/placeOrder';
+import { deliveryLocationProblem, isValidDeliveryLocation } from '../../src/lib/deliveryLocation';
+// Goer chatbot disabled for now.
+// import { GoerFab } from '../../src/components/goer/GoerFab';
 
 /** DoorDash-style tip presets, as a percentage of the food subtotal. */
 const TIP_PRESETS = [0, 15, 18, 20, 25] as const;
@@ -23,17 +23,16 @@ const DEFAULT_TIP_PERCENT = 18;
 const round2 = (n: number) => Math.round(n * 100) / 100;
 
 export default function CartScreen() {
+  const router = useRouter();
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const lines = useCartStore((s) => s.lines);
   const add = useCartStore((s) => s.add);
   const decrement = useCartStore((s) => s.decrement);
-  const clear = useCartStore((s) => s.clear);
   const subtotal = useCartStore((s) => s.subtotal());
   const deliveryFee = useCartStore((s) => s.deliveryFee());
   const cartRestaurantID = useCartStore((s) => s.restaurantID);
 
-  const record = useOrdersStore((s) => s.record);
   const defaultAddress = useAddressStore((s) => s.defaultAddress);
   const currentUser = useAuthStore((s) => s.currentUser);
 
@@ -52,48 +51,48 @@ export default function CartScreen() {
   }, [tipPercent, customTip, subtotal]);
 
   const total = round2(subtotal + deliveryFee + tip);
+  const hasValidLocation = isValidDeliveryLocation(defaultAddress);
 
-  const placeOrder = async () => {
+  // Checkout is gated on a verified delivery location: no valid address, no
+  // confirm dialog — the user is routed to the Address screen instead.
+  const startCheckout = () => {
+    if (!hasValidLocation) {
+      Alert.alert(
+        'Delivery address needed',
+        deliveryLocationProblem(defaultAddress) ?? 'Please add a delivery address.',
+        [
+          { text: 'Not now', style: 'cancel' },
+          { text: 'Add address', onPress: () => router.push('/address') },
+        ],
+      );
+      return;
+    }
+    setConfirmVisible(true);
+  };
+
+  const submitOrder = async () => {
     if (lines.length === 0 || processing) return;
     setProcessing(true);
 
-    // Snapshot before the cart is cleared on success.
-    const rid = cartRestaurantID ?? alTaib.id;
-    const restaurant = restaurantById(rid);
-    const restaurantName = restaurant?.name ?? rid;
-    const snapshot = { lines, subtotal, deliveryFee, tip, total };
-
-    // Simulated authorize → capture (the SwiftUI app's PaymentService, minus the network).
-    await new Promise((resolve) => setTimeout(resolve, 1200));
-
-    await record({
-      ...snapshot,
-      restaurantID: rid,
-      restaurantName,
+    const result = await placeOrder({
+      lines,
+      subtotal,
+      deliveryFee,
+      tip,
+      total,
+      restaurantID: cartRestaurantID,
       deliveryAddress: defaultAddress,
-      paymentIntentID: `pi_sim_${Crypto.randomUUID().slice(0, 12)}`,
+      customer: currentUser,
     });
 
-    // Tie the dispatched order to this signed-in customer so the driver who
-    // accepts it can message them back (see useOrderTracking).
-    const { data: authData } = supabase ? await supabase.auth.getUser() : { data: { user: null } };
-
-    // Best-effort: surface the order on the driver dashboard. Never blocks or
-    // fails checkout — the local record above is the source of truth.
-    void publishOrderToDispatch({
-      ...snapshot,
-      restaurantName,
-      restaurantAddress: restaurant?.address ?? '',
-      customerName: currentUser
-        ? `${currentUser.firstName} ${currentUser.lastName}`.trim()
-        : 'LocalGO Customer',
-      deliveryAddress: defaultAddress,
-      customerId: authData.user?.id ?? null,
-    });
-
-    clear();
     setProcessing(false);
-    Alert.alert('Order Placed!', 'Your order is on its way. Thanks for shopping with LocalGO!');
+    if (result.ok) {
+      // Replace (not push) so the hardware back button can't return to the
+      // now-paid, cleared cart.
+      router.replace('/order-confirmed');
+    } else {
+      Alert.alert('Order Failed', result.error);
+    }
   };
 
   if (lines.length === 0) {
@@ -109,6 +108,7 @@ export default function CartScreen() {
           <Text style={styles.emptyTitle}>Your cart is empty</Text>
           <Text style={styles.emptyBody}>Add items from a restaurant to get started.</Text>
         </View>
+        {/* <GoerFab /> */}
       </SafeAreaView>
     );
   }
@@ -204,6 +204,22 @@ export default function CartScreen() {
       </ScrollView>
 
       <View style={styles.summary}>
+        <Pressable style={styles.addressRow} onPress={() => router.push('/address')}>
+          <Ionicons
+            name={hasValidLocation ? 'location' : 'alert-circle'}
+            size={18}
+            color={hasValidLocation ? colors.orange : '#D9534F'}
+          />
+          <Text
+            style={[styles.addressRowText, !hasValidLocation && styles.addressRowWarn]}
+            numberOfLines={1}
+          >
+            {hasValidLocation && defaultAddress
+              ? `Deliver to ${defaultAddress.addressLine}`
+              : 'Add a delivery address to place your order'}
+          </Text>
+          <Ionicons name="chevron-forward" size={16} color={colors.gray400} />
+        </Pressable>
         <SummaryRow label="Subtotal" value={subtotal} styles={styles} />
         <SummaryRow label="Delivery Fee" value={deliveryFee} styles={styles} />
         <SummaryRow label="Driver Tip" value={tip} styles={styles} />
@@ -212,10 +228,13 @@ export default function CartScreen() {
         <GradientButton
           title={`Place Order • $${total.toFixed(2)}`}
           loading={processing}
-          onPress={() => setConfirmVisible(true)}
+          onPress={startCheckout}
           style={{ marginTop: 8 }}
         />
       </View>
+
+      {/* Lifted clear of the summary/checkout bar below. */}
+      {/* <GoerFab bottomOffset={210} /> */}
 
       <ConfirmModal
         visible={confirmVisible}
@@ -228,7 +247,7 @@ export default function CartScreen() {
         onCancel={() => setConfirmVisible(false)}
         onConfirm={() => {
           setConfirmVisible(false);
-          void placeOrder();
+          void submitOrder();
         }}
       />
     </SafeAreaView>
@@ -324,6 +343,14 @@ const makeStyles = (colors: ThemePalette) =>
     shadowOffset: { width: 0, height: -2 },
     elevation: 8,
   },
+  addressRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingBottom: 4,
+  },
+  addressRowText: { flex: 1, fontSize: 13.5, color: colors.navy, fontWeight: '600' },
+  addressRowWarn: { color: '#D9534F' },
   summaryRow: { flexDirection: 'row', justifyContent: 'space-between' },
   summaryLabel: { fontSize: 14, color: colors.textLight },
   summaryValue: { fontSize: 14, color: colors.navy },

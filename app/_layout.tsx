@@ -11,7 +11,10 @@ import { useAuthStore } from '../src/store/authStore';
 import { useOrdersStore } from '../src/store/ordersStore';
 import { useAddressStore } from '../src/store/addressStore';
 import { usePaymentStore } from '../src/store/paymentStore';
+// Goer chatbot disabled for now.
+// import { useGoerStore } from '../src/goer/goerStore';
 import { parseAuthLink } from '../src/lib/authDeepLink';
+import { onNotificationTapped, registerForPushNotifications } from '../src/lib/notifications';
 
 function RootNavigator() {
   const { colors, isDark } = useTheme();
@@ -24,6 +27,7 @@ function RootNavigator() {
   const configureOrders = useOrdersStore((s) => s.configure);
   const configureAddresses = useAddressStore((s) => s.configure);
   const configureCards = usePaymentStore((s) => s.configure);
+  // const configureGoer = useGoerStore((s) => s.configure);
 
   useEffect(() => {
     restoreSession();
@@ -34,7 +38,23 @@ function RootNavigator() {
     configureOrders(currentEmail);
     configureAddresses(currentEmail);
     configureCards(currentEmail);
+    // configureGoer(currentEmail);
   }, [currentEmail, configureOrders, configureAddresses, configureCards]);
+
+  // Register this device for push (new-order-accepted / chat-message alerts)
+  // once signed in; re-runs harmlessly if the account changes.
+  useEffect(() => {
+    if (isLoggedIn) void registerForPushNotifications();
+  }, [isLoggedIn, currentEmail]);
+
+  // Tapping a "new message" push opens that order's chat directly.
+  useEffect(() => {
+    return onNotificationTapped((data) => {
+      if (typeof data.orderId === 'string') {
+        router.push({ pathname: '/chat', params: { orderId: data.orderId } });
+      }
+    });
+  }, [router]);
 
   // Catches the deep link a password-reset email opens (localgo://reset-password#access_token=...),
   // exchanges the tokens for a live session, then routes to the set-new-password screen.
@@ -68,6 +88,11 @@ function RootNavigator() {
           />
           <Stack.Screen name="address" options={{ presentation: 'modal' }} />
           <Stack.Screen name="payment" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="chat" options={{ presentation: 'modal' }} />
+          <Stack.Screen
+            name="order-confirmed"
+            options={{ presentation: 'fullScreenModal', animation: 'fade', gestureEnabled: false }}
+          />
         </Stack.Protected>
         <Stack.Protected guard={!isLoggedIn}>
           <Stack.Screen name="(auth)" />

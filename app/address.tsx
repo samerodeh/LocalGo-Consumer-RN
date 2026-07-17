@@ -21,6 +21,7 @@ import { DisplayText } from '../src/components/DisplayText';
 import { GradientButton } from '../src/components/GradientButton';
 import { useAddressStore, addressDisplayName } from '../src/store/addressStore';
 import { searchAddresses, reverseGeocode, type GeoResult } from '../src/lib/geocoding';
+import { DELIVERY_ZONE, isInDeliveryZone } from '../src/lib/deliveryZone';
 import type { DeliveryPreference, PersonalLabel } from '../src/types';
 
 const LABELS: PersonalLabel[] = ['Home', 'Work', 'None'];
@@ -50,6 +51,7 @@ export default function AddressScreen() {
   const [suggestions, setSuggestions] = useState<GeoResult[]>([]);
   const [searching, setSearching] = useState(false);
   const [locating, setLocating] = useState(false);
+  const [saving, setSaving] = useState(false);
   // Set right after a suggestion/GPS fill so the effect below doesn't immediately
   // re-search the text we just injected.
   const suppressSearch = useRef(false);
@@ -106,6 +108,10 @@ export default function AddressScreen() {
       const geo = await reverseGeocode(pos.coords.latitude, pos.coords.longitude);
       if (geo) {
         applyResult(geo);
+        Alert.alert(
+          'Please double-check your address',
+          'We filled in your address from your current location. Please review it and make sure it’s correct before saving.',
+        );
       } else {
         // Still capture the coordinates even if reverse geocoding found no street.
         suppressSearch.current = true;
@@ -130,21 +136,80 @@ export default function AddressScreen() {
   };
 
   const onSave = async () => {
-    if (!canSave) return;
-    await save({
-      addressLine: addressLine.trim(),
-      postalCode: postalCode.trim(),
-      apartmentSuite: apartmentSuite.trim(),
-      entryCode: entryCode.trim(),
-      instructions: instructions.trim(),
-      latitude: coords?.lat,
-      longitude: coords?.lng,
-      personalLabel: label,
-      deliveryPreference: preference,
-      makeDefault: true,
-    });
-    resetForm();
-    setAdding(false);
+    if (!canSave || saving) return;
+    setSaving(true);
+    try {
+      // Every saved address must be a real, geocodable location — checkout
+      // refuses to place orders without verified coordinates. If the user
+      // typed the address manually (no suggestion tapped, no GPS), try to
+      // resolve it now; refuse the save when nothing matches.
+      let resolved = coords;
+      if (!resolved) {
+        const query = [addressLine.trim(), postalCode.trim()].filter(Boolean).join(' ');
+        const matches = await searchAddresses(query);
+        const first = matches[0];
+        if (first) {
+          resolved = { lat: first.latitude, lng: first.longitude };
+        } else {
+          Alert.alert(
+            'Address not found',
+            'We couldn’t verify that address. Please pick one of the search suggestions or use your current location.',
+          );
+          return;
+        }
+      }
+      // Refuse addresses outside the deliverable service area.
+      if (!isInDeliveryZone(resolved.lat, resolved.lng)) {
+        Alert.alert(
+          'Outside our delivery area',
+          `We only deliver within ${DELIVERY_ZONE.radiusKm} km of ${DELIVERY_ZONE.label}. Please enter a delivery address inside that area.`,
+        );
+        return;
+      }
+      // Don't let the user add the same place twice — an address is a duplicate
+      // when its street line, postal code and apartment/suite all match one they
+      // already have.
+      const key = (line: string, postal: string, suite: string) =>
+        `${line.trim().toLowerCase()}|${postal.trim().toLowerCase()}|${suite.trim().toLowerCase()}`;
+      const newKey = key(addressLine, postalCode, apartmentSuite);
+      const isDuplicate = addresses.some(
+        (a) => key(a.addressLine, a.postalCode, a.apartmentSuite) === newKey,
+      );
+      if (isDuplicate) {
+        Alert.alert(
+          'Address already saved',
+          'You already have this address in your list.',
+        );
+        return;
+      }
+      await save({
+        addressLine: addressLine.trim(),
+        postalCode: postalCode.trim(),
+        apartmentSuite: apartmentSuite.trim(),
+        entryCode: entryCode.trim(),
+        instructions: instructions.trim(),
+        latitude: resolved.lat,
+        longitude: resolved.lng,
+        personalLabel: label,
+        deliveryPreference: preference,
+        makeDefault: true,
+      });
+      resetForm();
+      setAdding(false);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Close the screen. router.back() is a no-op when this screen was opened
+  // without navigation history (e.g. a direct/deep link), so fall back to the
+  // home tab in that case.
+  const handleClose = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/(tabs)');
+    }
   };
 
   return (
@@ -153,7 +218,7 @@ export default function AddressScreen() {
         <DisplayText size={24} weight="bold" color={colors.navy}>
           Delivery Address
         </DisplayText>
-        <Pressable onPress={() => router.back()} hitSlop={10}>
+        <Pressable onPress={handleClose} hitSlop={10}>
           <Ionicons name="close" size={26} color={colors.navy} />
         </Pressable>
       </View>
@@ -303,6 +368,7 @@ export default function AddressScreen() {
                 title="Save Address"
                 onPress={onSave}
                 disabled={!canSave}
+                loading={saving}
                 style={{ marginTop: 8 }}
               />
             </View>

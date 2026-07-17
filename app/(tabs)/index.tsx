@@ -18,7 +18,10 @@ import { restaurants } from '../../src/data/restaurants';
 import type { Restaurant } from '../../src/types';
 import { useAuthStore } from '../../src/store/authStore';
 import { useAddressStore, addressDisplayName } from '../../src/store/addressStore';
-import { useOrderTracking, etaWindow } from '../../src/store/useOrderTracking';
+import { useOrderTracking } from '../../src/store/useOrderTracking';
+import { OrderTrackingStack } from '../../src/components/OrderTrackingStack';
+// Goer chatbot disabled for now.
+// import { GoerFab } from '../../src/components/goer/GoerFab';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -27,7 +30,7 @@ export default function HomeScreen() {
   const [searchText, setSearchText] = useState('');
   const firstName = useAuthStore((s) => s.currentUser?.firstName ?? '');
   const defaultAddress = useAddressStore((s) => s.defaultAddress);
-  const { notice, dismiss } = useOrderTracking();
+  const { orders: activeOrders, dismiss } = useOrderTracking();
 
   const results = useMemo(() => {
     const query = searchText.trim().toLowerCase();
@@ -68,24 +71,8 @@ export default function HomeScreen() {
           </DisplayText>
         </View>
 
-        {/* A driver just accepted the order → message the customer their ETA. */}
-        {notice ? (
-          <View style={styles.notice}>
-            <View style={styles.noticeIcon}>
-              <Ionicons name="bicycle" size={20} color={colors.white} />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.noticeTitle}>A driver is on the way! 🎉</Text>
-              <Text style={styles.noticeBody}>
-                Order {notice.orderNumber} is being delivered — arriving in about{' '}
-                {etaWindow(notice.etaMinutes).min}–{etaWindow(notice.etaMinutes).max} minutes.
-              </Text>
-            </View>
-            <Pressable onPress={dismiss} hitSlop={8}>
-              <Ionicons name="close" size={18} color={colors.textLight} />
-            </Pressable>
-          </View>
-        ) : null}
+        {/* Live tracking for every in-flight order — each with its own driver chat. */}
+        <OrderTrackingStack orders={activeOrders} onDismiss={dismiss} />
 
         {/* Search */}
         <View style={styles.searchBar}>
@@ -130,6 +117,7 @@ export default function HomeScreen() {
           </View>
         )}
       </ScrollView>
+      {/* <GoerFab /> */}
     </SafeAreaView>
   );
 }
@@ -236,33 +224,6 @@ const makeStyles = (colors: ThemePalette) =>
       elevation: 2,
     },
     searchInput: { flex: 1, fontSize: 14, color: colors.navy },
-    notice: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 12,
-      backgroundColor: colors.white,
-      borderRadius: radius.lg,
-      borderWidth: 1,
-      borderColor: colors.orange,
-      padding: 14,
-      marginHorizontal: 16,
-      marginTop: 20,
-      shadowColor: colors.orange,
-      shadowOpacity: 0.15,
-      shadowRadius: 10,
-      shadowOffset: { width: 0, height: 4 },
-      elevation: 3,
-    },
-    noticeIcon: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
-      backgroundColor: colors.orange,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    noticeTitle: { fontSize: 14, fontWeight: '700', color: colors.navy },
-    noticeBody: { fontSize: 12.5, color: colors.textLight, marginTop: 2, lineHeight: 17 },
     sectionTitle: { marginHorizontal: 16, marginTop: 24, marginBottom: 14 },
     noResults: { alignItems: 'center', paddingTop: 32, gap: 8 },
     noResultsText: { color: colors.textLight, fontSize: 14 },

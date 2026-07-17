@@ -1,0 +1,25 @@
+# Railway deployment config for the LocalGO FastAPI backend.
+#
+# Deploy from THIS directory (backend/), not the repo root:
+#     railway up
+#
+# backend/ is a subdirectory of the LocalGOConsumerRN repo, so if you ever
+# switch to Railway's GitHub integration instead of the CLI, set the service's
+# Root Directory to `backend` or the build will look for package.json and try
+# to build the Expo app.
+
+[deploy]
+# Railway assigns a port at runtime and injects it as $PORT. Hardcoding 8000
+# here would build fine and then be unreachable — the healthcheck would fail.
+startCommand = "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+
+healthcheckPath = "/health"
+healthcheckTimeout = 100
+
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
+
+# One replica on purpose: app/rate_limit.py counts in-process, so N replicas
+# would each keep their own window and multiply the effective Goer rate limit
+# by N. Scaling out means moving that counter to Postgres/Redis first.
+numReplicas = 1

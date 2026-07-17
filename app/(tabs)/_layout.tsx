@@ -1,13 +1,17 @@
+import { View } from 'react-native';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../src/theme/ThemeContext';
 import { useCartStore } from '../../src/store/cartStore';
+// Goer chatbot disabled for now.
+// import { GoerSheet } from '../../src/components/goer/GoerSheet';
 
 export default function TabsLayout() {
   const { colors } = useTheme();
   const itemCount = useCartStore((s) => s.itemCount());
 
   return (
+    <View style={{ flex: 1 }}>
     <Tabs
       screenOptions={{
         headerShown: false,
@@ -44,5 +48,9 @@ export default function TabsLayout() {
         }}
       />
     </Tabs>
+    {/* Single chat surface for the whole tab group — per-screen Modals would
+        double-present since both tab screens stay mounted. */}
+    {/* <GoerSheet /> */}
+    </View>
   );
 }
