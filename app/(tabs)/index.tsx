@@ -141,6 +141,7 @@ function RestaurantCard({
           fallbackIcon={restaurant.heroIcon}
           style={styles.cardHero}
           iconSize={44}
+          priority="high"
         />
         <RemoteImage
           urlString={restaurant.logoURL}

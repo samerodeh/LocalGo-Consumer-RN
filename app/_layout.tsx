@@ -15,6 +15,7 @@ import { usePaymentStore } from '../src/store/paymentStore';
 // import { useGoerStore } from '../src/goer/goerStore';
 import { parseAuthLink } from '../src/lib/authDeepLink';
 import { onNotificationTapped, registerForPushNotifications } from '../src/lib/notifications';
+import { warmImageCache } from '../src/lib/imagePrefetch';
 
 function RootNavigator() {
   const { colors, isDark } = useTheme();
@@ -46,6 +47,12 @@ function RootNavigator() {
   useEffect(() => {
     if (isLoggedIn) void registerForPushNotifications();
   }, [isLoggedIn, currentEmail]);
+
+  // Warm the image cache (restaurant heroes + first screenful of menu photos)
+  // once signed in, so browsing feels instant. One-shot per app session.
+  useEffect(() => {
+    if (isLoggedIn) warmImageCache();
+  }, [isLoggedIn]);
 
   // Tapping a "new message" push opens that order's chat directly.
   useEffect(() => {

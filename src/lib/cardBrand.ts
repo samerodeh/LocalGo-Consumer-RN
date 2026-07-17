@@ -59,6 +59,13 @@ export function validateCard(input: {
   const [mm, yy] = input.expiry.split('/');
   const month = Number(mm);
   if (!mm || !yy || month < 1 || month > 12) return { valid: false, error: 'Enter a valid expiry (MM/YY).' };
+  // Reject already-expired cards: a card is valid through the last day of its
+  // expiry month. Two-digit years are 20xx.
+  const now = new Date();
+  const expired =
+    2000 + Number(yy) < now.getFullYear() ||
+    (2000 + Number(yy) === now.getFullYear() && month < now.getMonth() + 1);
+  if (expired) return { valid: false, error: 'This card has expired.' };
   const cvvLen = detectBrand(digits) === 'Amex' ? 4 : 3;
   if (input.cvv.replace(/\D/g, '').length !== cvvLen) {
     return { valid: false, error: `Enter the ${cvvLen}-digit security code.` };

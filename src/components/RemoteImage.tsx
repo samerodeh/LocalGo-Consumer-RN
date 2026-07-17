@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Image, StyleSheet, View, type ViewStyle, type StyleProp } from 'react-native';
+import { StyleSheet, View, type ViewStyle, type StyleProp } from 'react-native';
+import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../theme/ThemeContext';
 import type { IoniconName } from '../types';
@@ -10,11 +11,19 @@ interface Props {
   style?: StyleProp<ViewStyle>;
   iconSize?: number;
   borderRadius?: number;
+  /** Bump for above-the-fold imagery (restaurant heroes); defaults to normal. */
+  priority?: 'low' | 'normal' | 'high';
 }
 
 /**
  * Async remote image with a graceful icon fallback — mirrors the SwiftUI RemoteImage.
- * Shows the fallback icon on a tinted surface while loading fails or the URL is null.
+ *
+ * Backed by expo-image rather than RN's Image: every URL is cached
+ * memory+disk (`cachePolicy`), so each photo downloads once per install
+ * instead of once per mount — the difference between a spinner-y list and an
+ * instant one on Android, where bare RN Image has no disk cache at all. The
+ * icon tile renders underneath and the photo fades in over it, so loading,
+ * loaded, and failed states all look intentional without extra state.
  */
 export function RemoteImage({
   urlString,
@@ -22,10 +31,10 @@ export function RemoteImage({
   style,
   iconSize = 24,
   borderRadius = 0,
+  priority = 'normal',
 }: Props) {
   const { colors } = useTheme();
   const [failed, setFailed] = useState(false);
-  const showFallback = !urlString || failed;
 
   return (
     <View
@@ -35,16 +44,19 @@ export function RemoteImage({
         style,
       ]}
     >
-      {showFallback ? (
-        <Ionicons name={fallbackIcon} size={iconSize} color={colors.orange} />
-      ) : (
+      <Ionicons name={fallbackIcon} size={iconSize} color={colors.orange} />
+      {urlString && !failed ? (
         <Image
-          source={{ uri: urlString! }}
+          source={{ uri: urlString }}
           style={[StyleSheet.absoluteFill, { borderRadius }]}
-          resizeMode="cover"
+          contentFit="cover"
+          cachePolicy="memory-disk"
+          priority={priority}
+          transition={150}
+          recyclingKey={urlString}
           onError={() => setFailed(true)}
         />
-      )}
+      ) : null}
     </View>
   );
 }
