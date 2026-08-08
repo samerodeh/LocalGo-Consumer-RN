@@ -1,0 +1,373 @@
+import { create } from 'zustand';
+import * as Crypto from 'expo-crypto';
+import type { CartLine } from '../types';
+import { loadGoerChat, saveGoerChat } from '../lib/storage';
+import { placeOrder } from '../lib/placeOrder';
+import { deliveryLocationProblem } from '../lib/deliveryLocation';
+import { useCartStore } from '../store/cartStore';
+import { useOrdersStore } from '../store/ordersStore';
+import { useAddressStore } from '../store/addressStore';
+import { useAuthStore } from '../store/authStore';
+import { isGoerLLMConfigured, MAX_API_MESSAGES, MAX_UI_MESSAGES } from './config';
+import type {
+  ApiMessage,
+  ChatTip,
+  GoerAgentId,
+  GoerMessage,
+  PersistedGoerChat,
+  StagedOrder,
+} from './types';
+
+const round2 = (n: number) => Math.round(n * 100) / 100;
+
+/** Fingerprint of the cart contents, used to detect edits between the moment an
+ *  order confirmation is staged and the moment the user taps Confirm. */
+export function computeCartHash(lines: CartLine[]): string {
+  return lines
+    .map((l) => `${l.item.id}:${l.quantity}`)
+    .sort()
+    .join('|');
+}
+
+/** Omit that distributes over unions — plain Omit would collapse GoerMessage's
+ *  variants down to their common keys. */
+type DistributiveOmit<T, K extends keyof never> = T extends unknown ? Omit<T, K> : never;
+
+/** Builds a transcript message with identity fields filled in. */
+export function goerMsg(body: DistributiveOmit<GoerMessage, 'id' | 'createdAt'>): GoerMessage {
+  return { ...body, id: Crypto.randomUUID(), createdAt: new Date().toISOString() } as GoerMessage;
+}
+
+export function resolveTip(tip: ChatTip, subtotal: number): number {
+  if (tip.kind === 'amount') return round2(Math.max(0, tip.value));
+  return round2((subtotal * tip.value) / 100);
+}
+
+const DEFAULT_TIP: ChatTip = { kind: 'percent', value: 18 };
+
+const DEFAULT_QUICK_REPLIES = [
+  'Show me the menu',
+  "What's in my cart?",
+  'Checkout',
+  "Where's my order?",
+];
+
+interface GoerState {
+  ownerEmail: string | null;
+  isOpen: boolean;
+  /** 'llm' streams through the goer-chat edge function; 'fallback' is the
+   *  on-device rule-based assistant. Downgrades stick for the session. */
+  mode: 'llm' | 'fallback';
+  activeAgent: GoerAgentId;
+  uiMessages: GoerMessage[];
+  apiMessages: ApiMessage[];
+  /** True while a turn is running (streaming or executing tools). */
+  isStreaming: boolean;
+  /** Partial assistant text for the in-progress bubble. */
+  streamingText: string;
+  stagedOrder: StagedOrder | null;
+  /** Terminal snapshots of confirmed orders so old confirmation cards render
+   *  correctly after restarts. */
+  placedOrders: Record<string, StagedOrder>;
+  chatTip: ChatTip;
+  chatAddressId: string | null;
+  /** Messages that arrived while the sheet was closed — badge on the FAB. */
+  unread: number;
+
+  open: () => void;
+  close: () => void;
+  configure: (email: string | null) => Promise<void>;
+  appendMessage: (msg: GoerMessage) => void;
+  appendApiMessage: (msg: ApiMessage) => void;
+  setStreaming: (streaming: boolean) => void;
+  setStreamingText: (text: string) => void;
+  setMode: (mode: 'llm' | 'fallback') => void;
+  setActiveAgent: (agent: GoerAgentId, announce?: boolean) => void;
+  setChatTip: (tip: ChatTip) => void;
+  setChatAddressId: (id: string | null) => void;
+  /** Snapshots the live cart + tip + address into a StagedOrder and shows the
+   *  confirmation card. Never places the order. */
+  stageOrder: () => { ok: true; staged: StagedOrder } | { ok: false; error: string };
+  /** The ONLY chat path that places an order — bound to the card's button. */
+  confirmStagedOrder: () => Promise<void>;
+  clearChat: () => void;
+}
+
+let persistTimer: ReturnType<typeof setTimeout> | null = null;
+
+function schedulePersist(get: () => GoerState) {
+  if (persistTimer) clearTimeout(persistTimer);
+  persistTimer = setTimeout(() => {
+    const s = get();
+    if (!s.ownerEmail) return;
+    const snapshot: PersistedGoerChat = {
+      uiMessages: s.uiMessages.slice(-MAX_UI_MESSAGES),
+      apiMessages: s.apiMessages.slice(-MAX_API_MESSAGES),
+      activeAgent: s.activeAgent,
+      placedOrders: s.placedOrders,
+      chatTip: s.chatTip,
+      chatAddressId: s.chatAddressId,
+    };
+    void saveGoerChat(s.ownerEmail, snapshot);
+  }, 500);
+}
+
+/**
+ * Trims API history to the cap without orphaning tool_results: the Anthropic
+ * API rejects a `tool_result` whose `tool_use` fell off the front, so after
+ * slicing we drop leading messages until the history starts at a plain user
+ * text message.
+ */
+export function trimApiMessages(messages: ApiMessage[]): ApiMessage[] {
+  let trimmed = messages.slice(-MAX_API_MESSAGES);
+  while (trimmed.length > 0) {
+    const first = trimmed[0];
+    const startsClean =
+      first.role === 'user' &&
+      (typeof first.content === 'string' ||
+        first.content.every((b) => b.type !== 'tool_result'));
+    if (startsClean) break;
+    trimmed = trimmed.slice(1);
+  }
+  return trimmed;
+}
+
+export const useGoerStore = create<GoerState>((set, get) => ({
+  ownerEmail: null,
+  isOpen: false,
+  mode: isGoerLLMConfigured ? 'llm' : 'fallback',
+  activeAgent: 'concierge',
+  uiMessages: [],
+  apiMessages: [],
+  isStreaming: false,
+  streamingText: '',
+  stagedOrder: null,
+  placedOrders: {},
+  chatTip: DEFAULT_TIP,
+  chatAddressId: null,
+  unread: 0,
+
+  open: () => {
+    const s = get();
+    const seeded: GoerMessage[] = [];
+    if (s.uiMessages.length === 0) {
+      const firstName = useAuthStore.getState().currentUser?.firstName;
+      seeded.push(
+        goerMsg({
+          kind: 'text',
+          role: 'assistant',
+          agent: 'concierge',
+          text: `Hey${firstName ? ` ${firstName}` : ''}! I'm Goer — I can walk you through Al Taib's menu, build your cart, and place the order right here. What are you craving?`,
+        }),
+        goerMsg({ kind: 'quick_replies', options: DEFAULT_QUICK_REPLIES }),
+      );
+    }
+    set({ isOpen: true, unread: 0, uiMessages: [...s.uiMessages, ...seeded] });
+    if (seeded.length > 0) schedulePersist(get);
+  },
+
+  close: () => set({ isOpen: false }),
+
+  configure: async (email) => {
+    if (persistTimer) clearTimeout(persistTimer);
+    if (!email) {
+      set({
+        ownerEmail: null,
+        isOpen: false,
+        uiMessages: [],
+        apiMessages: [],
+        activeAgent: 'concierge',
+        stagedOrder: null,
+        placedOrders: {},
+        chatTip: DEFAULT_TIP,
+        chatAddressId: null,
+        unread: 0,
+        isStreaming: false,
+        streamingText: '',
+        mode: isGoerLLMConfigured ? 'llm' : 'fallback',
+      });
+      return;
+    }
+    const saved = await loadGoerChat(email);
+    set({
+      ownerEmail: email,
+      uiMessages: saved?.uiMessages ?? [],
+      apiMessages: saved?.apiMessages ?? [],
+      activeAgent: saved?.activeAgent ?? 'concierge',
+      // A staged-but-unconfirmed order does not survive restarts; its card
+      // renders as expired via placedOrders lookup miss.
+      stagedOrder: null,
+      placedOrders: saved?.placedOrders ?? {},
+      chatTip: saved?.chatTip ?? DEFAULT_TIP,
+      chatAddressId: saved?.chatAddressId ?? null,
+      unread: 0,
+      isStreaming: false,
+      streamingText: '',
+      mode: isGoerLLMConfigured ? 'llm' : 'fallback',
+    });
+  },
+
+  appendMessage: (msg) => {
+    const isOwnMessage = msg.kind === 'text' && msg.role === 'user';
+    set((s) => ({
+      uiMessages: [...s.uiMessages, msg].slice(-MAX_UI_MESSAGES),
+      unread: s.isOpen || isOwnMessage ? s.unread : s.unread + 1,
+    }));
+    schedulePersist(get);
+  },
+
+  appendApiMessage: (msg) => {
+    set((s) => ({ apiMessages: trimApiMessages([...s.apiMessages, msg]) }));
+    schedulePersist(get);
+  },
+
+  setStreaming: (isStreaming) => set({ isStreaming, ...(isStreaming ? {} : { streamingText: '' }) }),
+  setStreamingText: (streamingText) => set({ streamingText }),
+  setMode: (mode) => set({ mode }),
+
+  setActiveAgent: (agent, announce = false) => {
+    const from = get().activeAgent;
+    if (from === agent) return;
+    set({ activeAgent: agent });
+    if (announce) get().appendMessage(goerMsg({ kind: 'agent_handoff', from, to: agent }));
+    schedulePersist(get);
+  },
+
+  setChatTip: (chatTip) => {
+    set({ chatTip });
+    schedulePersist(get);
+  },
+
+  setChatAddressId: (chatAddressId) => {
+    set({ chatAddressId });
+    schedulePersist(get);
+  },
+
+  stageOrder: () => {
+    const cart = useCartStore.getState();
+    if (cart.lines.length === 0) return { ok: false, error: 'The cart is empty.' };
+
+    const { chatTip, chatAddressId } = get();
+    const addressStore = useAddressStore.getState();
+    const address = chatAddressId
+      ? addressStore.allAddresses.find((a) => a.id === chatAddressId) ?? addressStore.defaultAddress
+      : addressStore.defaultAddress;
+    // Same gate as the Cart screen: a checkout needs a verified delivery
+    // location, not just any saved string.
+    const locationProblem = deliveryLocationProblem(address ?? null);
+    if (!address || locationProblem) {
+      return {
+        ok: false,
+        error: `${locationProblem} The user must fix this on the Address screen before checkout.`,
+      };
+    }
+
+    const subtotal = round2(cart.subtotal());
+    const deliveryFee = cart.deliveryFee();
+    const tip = resolveTip(chatTip, subtotal);
+    const staged: StagedOrder = {
+      id: Crypto.randomUUID(),
+      status: 'staged',
+      lines: cart.lines,
+      subtotal,
+      deliveryFee,
+      tip,
+      total: round2(subtotal + deliveryFee + tip),
+      restaurantID: cart.restaurantID,
+      address,
+      cartHash: computeCartHash(cart.lines),
+    };
+    set({ stagedOrder: staged });
+    get().appendMessage(goerMsg({ kind: 'order_confirmation', stagedOrderID: staged.id }));
+    return { ok: true, staged };
+  },
+
+  confirmStagedOrder: async () => {
+    const staged = get().stagedOrder;
+    // Status guard doubles as duplicate-tap protection: 'placing' and 'placed'
+    // no-op here.
+    if (!staged || staged.status !== 'staged') return;
+
+    if (computeCartHash(useCartStore.getState().lines) !== staged.cartHash) {
+      set({ stagedOrder: { ...staged, status: 'stale' } });
+      get().appendMessage(
+        goerMsg({
+          kind: 'system_note',
+          text: 'Your cart changed after this summary was made — ask Goer to check out again for an updated total.',
+        }),
+      );
+      return;
+    }
+
+    set({ stagedOrder: { ...staged, status: 'placing' } });
+    const result = await placeOrder({
+      lines: staged.lines,
+      subtotal: staged.subtotal,
+      deliveryFee: staged.deliveryFee,
+      tip: staged.tip,
+      total: staged.total,
+      restaurantID: staged.restaurantID,
+      deliveryAddress: staged.address,
+      customer: useAuthStore.getState().currentUser,
+    });
+
+    if (!result.ok) {
+      set({ stagedOrder: { ...staged, status: 'staged' } });
+      get().appendMessage(
+        goerMsg({ kind: 'system_note', text: `Couldn't place the order: ${result.error}` }),
+      );
+      return;
+    }
+
+    const placed: StagedOrder = { ...staged, status: 'placed' };
+    set((s) => ({
+      stagedOrder: null,
+      placedOrders: { ...s.placedOrders, [placed.id]: placed },
+    }));
+
+    const record = useOrdersStore.getState().orders[0];
+    get().appendMessage(
+      goerMsg({
+        kind: 'text',
+        role: 'assistant',
+        agent: 'tracker',
+        text: 'Order placed! 🎉 Al Taib is on it — I’ll keep an eye out for your driver.',
+      }),
+    );
+    get().appendMessage(
+      goerMsg({
+        kind: 'order_status',
+        agent: 'tracker',
+        info: {
+          orderNumber: null,
+          status: record?.status ?? 'Placed',
+          etaMinutes: null,
+          placedAt: record?.placedAt ?? new Date().toISOString(),
+          restaurantName: record?.restaurantName ?? 'Al Taib',
+          totalCents: record?.totalCents ?? Math.round(placed.total * 100),
+          driverAccepted: false,
+        },
+      }),
+    );
+    get().setActiveAgent('tracker', true);
+    // Give the model the ground truth for the rest of the conversation.
+    get().appendApiMessage({
+      role: 'user',
+      content: `[system event] The user tapped Confirm and the order was placed successfully (total $${placed.total.toFixed(2)}). The cart is now empty.`,
+    });
+  },
+
+  clearChat: () => {
+    set({
+      uiMessages: [],
+      apiMessages: [],
+      activeAgent: 'concierge',
+      stagedOrder: null,
+      chatTip: DEFAULT_TIP,
+      streamingText: '',
+      isStreaming: false,
+      unread: 0,
+    });
+    schedulePersist(get);
+  },
+}));
