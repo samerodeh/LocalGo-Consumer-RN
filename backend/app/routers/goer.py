@@ -1,32 +1,45 @@
-"""Goer chat proxy — the FastAPI port of the old `goer-chat` Supabase edge
-function: a thin, secure SSE pass-through to the Anthropic Messages API. The
-ANTHROPIC_API_KEY lives only in the backend env; the mobile client sends
-{system, messages, tools} and receives the raw Anthropic event stream. Tools
-execute client-side (the cart is on-device state), so this stays stateless."""
+"""Goer's HTTP surface.
+
+The chat endpoints run the whole multi-agent pipeline server-side (guard ->
+router -> specialist), the way SufraAI's `/chat` does. That's a change from the
+previous design, where the backend was a thin Anthropic pass-through and the
+agent loop ran in the app bundle: prompts, routing, retrieval, and the
+recommender now live here, and the phone only executes the tool calls that
+touch its own cart.
+
+    POST /goer/chat          one turn, JSON in / JSON out
+    POST /goer/chat/stream   the same turn as SSE (tokens, then actions)
+    GET  /goer/menu          the menu the agents reason over
+    GET  /goer/faq           the FAQ knowledge base
+    GET  /goer/recommendations  Apriori/popularity picks, no LLM involved
+"""
+
+from __future__ import annotations
 
 import json
 
-import httpx
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse, StreamingResponse
 
 from .. import config
+from ..goer.agent_utilities import get_faqs, get_menu_items, menu_item_by_id
+from ..goer.rag import embedding_backend
+from ..goer.recommender import get_popular_items, get_recommendations
+from ..goer.router_agent import run_turn, stream_turn
+from ..goer.schemas import ChatRequest
 from ..postgrest import bearer_from, jwt_sub
 from ..rate_limit import rate_limited
 
-router = APIRouter()
+router = APIRouter(prefix="/goer", tags=["goer"])
 
-ANTHROPIC_URL = "https://api.anthropic.com/v1/messages"
-MODEL_ALLOWLIST = ["claude-haiku-4-5", "claude-sonnet-4-6"]
-MAX_TOKENS_CAP = 2048
-MAX_MESSAGES = 40
-MAX_BODY_BYTES = 100_000
+MAX_MESSAGE_CHARS = 2000
 
 
 def _error(status: int, message: str) -> JSONResponse:
-    # Same error envelope the edge function used, so the app's stream parser
-    # surfaces it identically.
-    return JSONResponse(status_code=status, content={"type": "error", "error": {"message": message}})
+    # Error envelope the app's stream parser understands in both transports.
+    return JSONResponse(
+        status_code=status, content={"type": "error", "error": {"message": message}}
+    )
 
 
 def _caller_key(request: Request) -> str:
@@ -39,80 +52,106 @@ def _caller_key(request: Request) -> str:
     return request.client.host if request.client else "unknown"
 
 
-@router.post("/goer/chat")
-async def goer_chat(request: Request):
-    if not config.ANTHROPIC_API_KEY:
-        return _error(500, "ANTHROPIC_API_KEY is not configured")
-
+def _precheck(request: Request, body: ChatRequest) -> JSONResponse | None:
+    if not config.GOER_CONFIGURED:
+        return _error(503, "GROQ_API_KEY is not configured")
     if rate_limited(_caller_key(request)):
         return _error(429, "Slow down — try again in a minute.")
+    if not body.message or not body.message.strip():
+        return _error(400, "message is required")
+    if len(body.message) > MAX_MESSAGE_CHARS:
+        return _error(400, "message is too long")
+    return None
 
-    raw = await request.body()
-    if len(raw) > MAX_BODY_BYTES:
-        return _error(400, "Request too large")
+
+@router.post("/chat")
+async def goer_chat(request: Request, body: ChatRequest):
+    problem = _precheck(request, body)
+    if problem is not None:
+        return problem
     try:
-        body = json.loads(raw)
-    except json.JSONDecodeError:
-        return _error(400, "Invalid JSON")
-    if not isinstance(body, dict):
-        return _error(400, "Invalid JSON")
+        return run_turn(body.message, body.history, body.context, body.active_agent)
+    except Exception as exc:  # upstream outage, bad key, model error
+        print(f"[goer] turn failed: {type(exc).__name__}: {exc}")
+        return _error(502, f"Goer is unavailable right now ({type(exc).__name__})")
 
-    messages = body.get("messages")
-    if not isinstance(messages, list) or len(messages) == 0:
-        return _error(400, "messages[] required")
 
-    model = body.get("model")
-    try:
-        max_tokens = int(body.get("max_tokens") or 1024)
-    except (TypeError, ValueError):
-        max_tokens = 1024
+@router.post("/chat/stream")
+async def goer_chat_stream(request: Request, body: ChatRequest):
+    problem = _precheck(request, body)
+    if problem is not None:
+        return problem
 
-    payload = {
-        "model": model if isinstance(model, str) and model in MODEL_ALLOWLIST else config.GOER_MODEL,
-        "max_tokens": min(max_tokens, MAX_TOKENS_CAP),
-        "messages": messages[-MAX_MESSAGES:],
-        "tools": body.get("tools") if isinstance(body.get("tools"), list) else [],
-        "stream": True,
-    }
-    if isinstance(body.get("system"), str):
-        payload["system"] = body["system"]
-
-    # Open the upstream stream before answering so a non-200 can be reported
-    # as a clean JSON error instead of a broken SSE stream.
-    client = httpx.AsyncClient(timeout=httpx.Timeout(30.0, read=300.0))
-    upstream_request = client.build_request(
-        "POST",
-        ANTHROPIC_URL,
-        headers={
-            "x-api-key": config.ANTHROPIC_API_KEY,
-            "anthropic-version": "2023-06-01",
-            "content-type": "application/json",
-        },
-        json=payload,
-    )
-    try:
-        upstream = await client.send(upstream_request, stream=True)
-    except httpx.HTTPError as exc:
-        await client.aclose()
-        return _error(502, f"Upstream unreachable: {exc}")
-
-    if upstream.status_code != 200:
-        detail = (await upstream.aread()).decode(errors="replace")[:500]
-        print(f"[goer-chat] upstream error {upstream.status_code} {detail}")
-        await upstream.aclose()
-        await client.aclose()
-        return _error(502, f"Upstream error ({upstream.status_code})")
-
-    async def pipe():
+    def generate():
         try:
-            async for chunk in upstream.aiter_bytes():
-                yield chunk
-        finally:
-            await upstream.aclose()
-            await client.aclose()
+            for event in stream_turn(
+                body.message, body.history, body.context, body.active_agent
+            ):
+                yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
+        except Exception as exc:
+            print(f"[goer] stream failed: {type(exc).__name__}: {exc}")
+            # An in-band error frame, so a failure mid-stream is something the
+            # client can show rather than a truncated sentence.
+            payload = {"type": "error", "error": {"message": str(exc)}}
+            yield f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
+        yield "data: [DONE]\n\n"
 
     return StreamingResponse(
-        pipe(),
+        generate(),
         media_type="text/event-stream",
-        headers={"cache-control": "no-cache"},
+        headers={"cache-control": "no-cache", "x-accel-buffering": "no"},
     )
+
+
+@router.get("/menu")
+def goer_menu():
+    """The enriched menu (allergens, diet tags, alternatives) the agents use.
+
+    The app renders from `src/data/menu.ts`; this is the same catalogue with
+    the fields only the agents need, generated by
+    `scripts/build_menu_dataset.py`.
+    """
+    return get_menu_items()
+
+
+@router.get("/faq")
+def goer_faq():
+    return get_faqs()
+
+
+@router.get("/recommendations")
+def goer_recommendations(user_id: str = "guest", cart_items: str = ""):
+    """Apriori picks for a cart, popularity when the cart is empty.
+
+    Deterministic and model-free, so the app can call it to fill a "you might
+    also like" row without spending a chat turn.
+    """
+    cart = [item.strip() for item in cart_items.split(",") if item.strip()]
+    rec_ids = get_recommendations(cart) if cart else get_popular_items()
+    return {
+        "userId": user_id,
+        "cartItems": cart,
+        "recommendations": [
+            {
+                "itemId": item["id"],
+                "name_en": item["name_en"],
+                "name_ar": item["name_ar"],
+                "price": item["price"],
+                "category": item["category"],
+                "image_url": item["image_url"],
+            }
+            for rec_id in rec_ids
+            if (item := menu_item_by_id(rec_id))
+        ],
+    }
+
+
+@router.get("/health")
+def goer_health():
+    return {
+        "configured": config.GOER_CONFIGURED,
+        "model": config.GOER_MODEL,
+        "embedding": embedding_backend(),
+        "menuItems": len(get_menu_items()),
+        "faqs": len(get_faqs()),
+    }

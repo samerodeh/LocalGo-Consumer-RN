@@ -55,7 +55,7 @@ const DEFAULT_QUICK_REPLIES = [
 interface GoerState {
   ownerEmail: string | null;
   isOpen: boolean;
-  /** 'llm' streams through the goer-chat edge function; 'fallback' is the
+  /** 'llm' streams a turn from the backend's agent pipeline; 'fallback' is the
    *  on-device rule-based assistant. Downgrades stick for the session. */
   mode: 'llm' | 'fallback';
   activeAgent: GoerAgentId;
@@ -113,23 +113,28 @@ function schedulePersist(get: () => GoerState) {
 }
 
 /**
- * Trims API history to the cap without orphaning tool_results: the Anthropic
- * API rejects a `tool_result` whose `tool_use` fell off the front, so after
- * slicing we drop leading messages until the history starts at a plain user
- * text message.
+ * Trims API history to the cap.
+ *
+ * Every entry is a plain text turn now that the agent loop is server-side, so
+ * this is a slice — the old version also had to avoid orphaning a `tool_result`
+ * whose `tool_use` had fallen off the front, which the wire format no longer
+ * has. `sanitizeApiMessages` handles chats persisted under that older format.
  */
 export function trimApiMessages(messages: ApiMessage[]): ApiMessage[] {
-  let trimmed = messages.slice(-MAX_API_MESSAGES);
-  while (trimmed.length > 0) {
-    const first = trimmed[0];
-    const startsClean =
-      first.role === 'user' &&
-      (typeof first.content === 'string' ||
-        first.content.every((b) => b.type !== 'tool_result'));
-    if (startsClean) break;
-    trimmed = trimmed.slice(1);
-  }
-  return trimmed;
+  return sanitizeApiMessages(messages).slice(-MAX_API_MESSAGES);
+}
+
+/** Drops anything that isn't a plain text turn — chats persisted before the
+ *  backend took over the loop hold Anthropic content-block arrays. */
+export function sanitizeApiMessages(messages: unknown): ApiMessage[] {
+  if (!Array.isArray(messages)) return [];
+  return messages.filter(
+    (m): m is ApiMessage =>
+      Boolean(m) &&
+      (m.role === 'user' || m.role === 'assistant') &&
+      typeof m.content === 'string' &&
+      m.content.trim().length > 0,
+  );
 }
 
 export const useGoerStore = create<GoerState>((set, get) => ({
@@ -192,7 +197,7 @@ export const useGoerStore = create<GoerState>((set, get) => ({
     set({
       ownerEmail: email,
       uiMessages: saved?.uiMessages ?? [],
-      apiMessages: saved?.apiMessages ?? [],
+      apiMessages: sanitizeApiMessages(saved?.apiMessages),
       activeAgent: saved?.activeAgent ?? 'concierge',
       // A staged-but-unconfirmed order does not survive restarts; its card
       // renders as expired via placedOrders lookup miss.
@@ -312,11 +317,24 @@ export const useGoerStore = create<GoerState>((set, get) => ({
     });
 
     if (!result.ok) {
+      // Re-staging (not discarding) means the confirmation card stays usable,
+      // so a declined card or a dismissed sheet can just be retried.
       set({ stagedOrder: { ...staged, status: 'staged' } });
       get().appendMessage(
-        goerMsg({ kind: 'system_note', text: `Couldn't place the order: ${result.error}` }),
+        goerMsg({
+          kind: 'system_note',
+          text: result.canceled
+            ? "Payment canceled — nothing was charged. Your cart is still here when you're ready."
+            : `Couldn't place the order: ${result.error}`,
+        }),
       );
       return;
+    }
+
+    // Charged but not dispatched. Surfaced in chat for the same reason the Cart
+    // screen alerts: the customer has paid and needs to know.
+    if (result.warning) {
+      get().appendMessage(goerMsg({ kind: 'system_note', text: result.warning }));
     }
 
     const placed: StagedOrder = { ...staged, status: 'placed' };

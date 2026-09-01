@@ -1,0 +1,654 @@
+{
+  "all-dressed-pizza": [
+    {
+      "itemIds": [
+        "pepsi"
+      ],
+      "confidence": 1.0,
+      "lift": 8.3478
+    },
+    {
+      "itemIds": [
+        "poutine"
+      ],
+      "confidence": 1.0,
+      "lift": 20.2105
+    }
+  ],
+  "all-dressed-pizza-slice": [
+    {
+      "itemIds": [
+        "pepsi"
+      ],
+      "confidence": 1.0,
+      "lift": 8.3478
+    }
+  ],
+  "apple-juice": [
+    {
+      "itemIds": [
+        "zaatar-and-chesse-manakish"
+      ],
+      "confidence": 0.7692,
+      "lift": 29.5385
+    }
+  ],
+  "ayran": [
+    {
+      "itemIds": [
+        "zaatar-manakish"
+      ],
+      "confidence": 0.5818,
+      "lift": 5.3195
+    },
+    {
+      "itemIds": [
+        "cheese-manakish"
+      ],
+      "confidence": 0.2364,
+      "lift": 6.9818
+    },
+    {
+      "itemIds": [
+        "lahmbajine-manakish"
+      ],
+      "confidence": 0.1818,
+      "lift": 6.9818
+    }
+  ],
+  "baklava-patesserie": [
+    {
+      "itemIds": [
+        "coke"
+      ],
+      "confidence": 0.5455,
+      "lift": 1.4249
+    },
+    {
+      "itemIds": [
+        "fries"
+      ],
+      "confidence": 0.2955,
+      "lift": 1.4007
+    },
+    {
+      "itemIds": [
+        "shish-taouk-plate"
+      ],
+      "confidence": 0.2727,
+      "lift": 3.3783
+    }
+  ],
+  "basmati-rice": [
+    {
+      "itemIds": [
+        "hot-potato"
+      ],
+      "confidence": 0.5714,
+      "lift": 16.8791
+    },
+    {
+      "itemIds": [
+        "tabouleh"
+      ],
+      "confidence": 0.5714,
+      "lift": 6.6494
+    }
+  ],
+  "cheese-manakish": [
+    {
+      "itemIds": [
+        "ayran"
+      ],
+      "confidence": 1.0,
+      "lift": 6.9818
+    }
+  ],
+  "cheese-pizza": [
+    {
+      "itemIds": [
+        "coke"
+      ],
+      "confidence": 1.0,
+      "lift": 2.6122
+    },
+    {
+      "itemIds": [
+        "veggie-pizza"
+      ],
+      "confidence": 1.0,
+      "lift": 38.4
+    }
+  ],
+  "cheese-pizza-slice": [
+    {
+      "itemIds": [
+        "coke"
+      ],
+      "confidence": 0.72,
+      "lift": 1.8808
+    },
+    {
+      "itemIds": [
+        "fries"
+      ],
+      "confidence": 0.36,
+      "lift": 1.7067
+    }
+  ],
+  "coke": [
+    {
+      "itemIds": [
+        "fries"
+      ],
+      "confidence": 0.3061,
+      "lift": 1.4512
+    },
+    {
+      "itemIds": [
+        "pepperoni-pizza-slice"
+      ],
+      "confidence": 0.2449,
+      "lift": 2.6122
+    },
+    {
+      "itemIds": [
+        "baklava-patesserie"
+      ],
+      "confidence": 0.1633,
+      "lift": 1.4249
+    },
+    {
+      "itemIds": [
+        "shish-taouk-plate"
+      ],
+      "confidence": 0.1293,
+      "lift": 1.6011
+    },
+    {
+      "itemIds": [
+        "cheese-pizza-slice"
+      ],
+      "confidence": 0.1224,
+      "lift": 1.8808
+    },
+    {
+      "itemIds": [
+        "pepperoni-pizza"
+      ],
+      "confidence": 0.0884,
+      "lift": 2.6122
+    },
+    {
+      "itemIds": [
+        "shish-taouk-sandwich"
+      ],
+      "confidence": 0.0884,
+      "lift": 2.6122
+    },
+    {
+      "itemIds": [
+        "cheese-pizza"
+      ],
+      "confidence": 0.068,
+      "lift": 2.6122
+    },
+    {
+      "itemIds": [
+        "veggie-pizza"
+      ],
+      "confidence": 0.068,
+      "lift": 2.6122
+    },
+    {
+      "itemIds": [
+        "poutine"
+      ],
+      "confidence": 0.0612,
+      "lift": 1.2374
+    }
+  ],
+  "falafel-plate": [
+    {
+      "itemIds": [
+        "hummus"
+      ],
+      "confidence": 1.0,
+      "lift": 6.0952
+    },
+    {
+      "itemIds": [
+        "tabouleh"
+      ],
+      "confidence": 1.0,
+      "lift": 11.6364
+    }
+  ],
+  "falafel-sandwich": [
+    {
+      "itemIds": [
+        "fatoush"
+      ],
+      "confidence": 1.0,
+      "lift": 17.4545
+    }
+  ],
+  "fatoush": [
+    {
+      "itemIds": [
+        "hummus"
+      ],
+      "confidence": 0.6818,
+      "lift": 4.1558
+    },
+    {
+      "itemIds": [
+        "tabouleh"
+      ],
+      "confidence": 0.6364,
+      "lift": 7.405
+    },
+    {
+      "itemIds": [
+        "falafel-sandwich"
+      ],
+      "confidence": 0.3636,
+      "lift": 17.4545
+    }
+  ],
+  "fries": [
+    {
+      "itemIds": [
+        "coke"
+      ],
+      "confidence": 0.5556,
+      "lift": 1.4512
+    },
+    {
+      "itemIds": [
+        "pepperoni-pizza-slice"
+      ],
+      "confidence": 0.1852,
+      "lift": 1.9753
+    },
+    {
+      "itemIds": [
+        "pepperoni-pizza"
+      ],
+      "confidence": 0.1605,
+      "lift": 4.7407
+    },
+    {
+      "itemIds": [
+        "baklava-patesserie"
+      ],
+      "confidence": 0.1605,
+      "lift": 1.4007
+    },
+    {
+      "itemIds": [
+        "shish-taouk-sandwich"
+      ],
+      "confidence": 0.1605,
+      "lift": 4.7407
+    },
+    {
+      "itemIds": [
+        "shish-taouk-plate"
+      ],
+      "confidence": 0.1481,
+      "lift": 1.8351
+    },
+    {
+      "itemIds": [
+        "pepsi"
+      ],
+      "confidence": 0.1235,
+      "lift": 1.0306
+    },
+    {
+      "itemIds": [
+        "cheese-pizza-slice"
+      ],
+      "confidence": 0.1111,
+      "lift": 1.7067
+    },
+    {
+      "itemIds": [
+        "shawarma-beef-sandwich"
+      ],
+      "confidence": 0.1111,
+      "lift": 4.7407
+    }
+  ],
+  "hot-potato": [
+    {
+      "itemIds": [
+        "tabouleh"
+      ],
+      "confidence": 0.6923,
+      "lift": 8.0559
+    },
+    {
+      "itemIds": [
+        "basmati-rice"
+      ],
+      "confidence": 0.6154,
+      "lift": 16.8791
+    }
+  ],
+  "hummus": [
+    {
+      "itemIds": [
+        "tabouleh"
+      ],
+      "confidence": 0.3968,
+      "lift": 4.6176
+    },
+    {
+      "itemIds": [
+        "shish-taouk-plate"
+      ],
+      "confidence": 0.3016,
+      "lift": 3.7358
+    },
+    {
+      "itemIds": [
+        "shawarma-beef-plate"
+      ],
+      "confidence": 0.2857,
+      "lift": 6.0952
+    },
+    {
+      "itemIds": [
+        "fatoush"
+      ],
+      "confidence": 0.2381,
+      "lift": 4.1558
+    },
+    {
+      "itemIds": [
+        "falafel-plate"
+      ],
+      "confidence": 0.1746,
+      "lift": 6.0952
+    }
+  ],
+  "lahmbajine-manakish": [
+    {
+      "itemIds": [
+        "ayran"
+      ],
+      "confidence": 1.0,
+      "lift": 6.9818
+    }
+  ],
+  "pepperoni-pizza": [
+    {
+      "itemIds": [
+        "coke"
+      ],
+      "confidence": 1.0,
+      "lift": 2.6122
+    },
+    {
+      "itemIds": [
+        "fries"
+      ],
+      "confidence": 1.0,
+      "lift": 4.7407
+    }
+  ],
+  "pepperoni-pizza-slice": [
+    {
+      "itemIds": [
+        "coke"
+      ],
+      "confidence": 1.0,
+      "lift": 2.6122
+    },
+    {
+      "itemIds": [
+        "fries"
+      ],
+      "confidence": 0.4167,
+      "lift": 1.9753
+    }
+  ],
+  "pepsi": [
+    {
+      "itemIds": [
+        "all-dressed-pizza-slice"
+      ],
+      "confidence": 0.5,
+      "lift": 8.3478
+    },
+    {
+      "itemIds": [
+        "fries"
+      ],
+      "confidence": 0.2174,
+      "lift": 1.0306
+    },
+    {
+      "itemIds": [
+        "all-dressed-pizza"
+      ],
+      "confidence": 0.2174,
+      "lift": 8.3478
+    },
+    {
+      "itemIds": [
+        "poutine"
+      ],
+      "confidence": 0.2174,
+      "lift": 4.3936
+    },
+    {
+      "itemIds": [
+        "shawarma-beef-sandwich"
+      ],
+      "confidence": 0.1957,
+      "lift": 8.3478
+    }
+  ],
+  "poutine": [
+    {
+      "itemIds": [
+        "all-dressed-pizza"
+      ],
+      "confidence": 0.5263,
+      "lift": 20.2105
+    },
+    {
+      "itemIds": [
+        "pepsi"
+      ],
+      "confidence": 0.5263,
+      "lift": 4.3936
+    },
+    {
+      "itemIds": [
+        "coke"
+      ],
+      "confidence": 0.4737,
+      "lift": 1.2374
+    }
+  ],
+  "shawarma-beef-plate": [
+    {
+      "itemIds": [
+        "hummus"
+      ],
+      "confidence": 1.0,
+      "lift": 6.0952
+    }
+  ],
+  "shawarma-beef-sandwich": [
+    {
+      "itemIds": [
+        "fries"
+      ],
+      "confidence": 1.0,
+      "lift": 4.7407
+    },
+    {
+      "itemIds": [
+        "pepsi"
+      ],
+      "confidence": 1.0,
+      "lift": 8.3478
+    }
+  ],
+  "shish-taouk-plate": [
+    {
+      "itemIds": [
+        "coke"
+      ],
+      "confidence": 0.6129,
+      "lift": 1.6011
+    },
+    {
+      "itemIds": [
+        "hummus"
+      ],
+      "confidence": 0.6129,
+      "lift": 3.7358
+    },
+    {
+      "itemIds": [
+        "baklava-patesserie"
+      ],
+      "confidence": 0.3871,
+      "lift": 3.3783
+    },
+    {
+      "itemIds": [
+        "fries"
+      ],
+      "confidence": 0.3871,
+      "lift": 1.8351
+    }
+  ],
+  "shish-taouk-sandwich": [
+    {
+      "itemIds": [
+        "coke"
+      ],
+      "confidence": 1.0,
+      "lift": 2.6122
+    },
+    {
+      "itemIds": [
+        "fries"
+      ],
+      "confidence": 1.0,
+      "lift": 4.7407
+    }
+  ],
+  "spinach-pie": [
+    {
+      "itemIds": [
+        "zaatar-manakish"
+      ],
+      "confidence": 1.0,
+      "lift": 9.1429
+    }
+  ],
+  "tabouleh": [
+    {
+      "itemIds": [
+        "hummus"
+      ],
+      "confidence": 0.7576,
+      "lift": 4.6176
+    },
+    {
+      "itemIds": [
+        "fatoush"
+      ],
+      "confidence": 0.4242,
+      "lift": 7.405
+    },
+    {
+      "itemIds": [
+        "falafel-plate"
+      ],
+      "confidence": 0.3333,
+      "lift": 11.6364
+    },
+    {
+      "itemIds": [
+        "hot-potato"
+      ],
+      "confidence": 0.2727,
+      "lift": 8.0559
+    },
+    {
+      "itemIds": [
+        "basmati-rice"
+      ],
+      "confidence": 0.2424,
+      "lift": 6.6494
+    }
+  ],
+  "veggie-pizza": [
+    {
+      "itemIds": [
+        "cheese-pizza"
+      ],
+      "confidence": 1.0,
+      "lift": 38.4
+    },
+    {
+      "itemIds": [
+        "coke"
+      ],
+      "confidence": 1.0,
+      "lift": 2.6122
+    }
+  ],
+  "veggie-pizza-slice": [
+    {
+      "itemIds": [
+        "water"
+      ],
+      "confidence": 1.0,
+      "lift": 24.0
+    }
+  ],
+  "water": [
+    {
+      "itemIds": [
+        "veggie-pizza-slice"
+      ],
+      "confidence": 0.5,
+      "lift": 24.0
+    }
+  ],
+  "zaatar-and-chesse-manakish": [
+    {
+      "itemIds": [
+        "apple-juice"
+      ],
+      "confidence": 1.0,
+      "lift": 29.5385
+    }
+  ],
+  "zaatar-manakish": [
+    {
+      "itemIds": [
+        "ayran"
+      ],
+      "confidence": 0.7619,
+      "lift": 5.3195
+    },
+    {
+      "itemIds": [
+        "spinach-pie"
+      ],
+      "confidence": 0.2381,
+      "lift": 9.1429
+    }
+  ]
+}

@@ -5,6 +5,7 @@ import { useCartStore } from '../store/cartStore';
 import { useOrdersStore } from '../store/ordersStore';
 import { publishOrderToDispatch } from './dispatch';
 import { deliveryLocationProblem } from './deliveryLocation';
+import { isPaymentsConfigured, payForOrder } from './payments';
 import { supabase } from './supabase';
 
 /** Everything checkout needs, snapshotted by the caller before the cart mutates. */
@@ -19,20 +20,44 @@ export interface PlaceOrderInput {
   customer: StoredUser | null;
 }
 
-export type PlaceOrderResult = { ok: true } | { ok: false; error: string };
+export type PlaceOrderResult =
+  | {
+      ok: true;
+      orderId: string;
+      /** Paid and recorded, but the driver feed didn't get it. Show this. */
+      warning?: string;
+    }
+  | {
+      ok: false;
+      error: string;
+      /** User dismissed the payment sheet. Nothing was charged; stay quiet. */
+      canceled?: boolean;
+    };
 
 /**
  * The single checkout pipeline, shared by the Cart screen and Goer's in-chat
- * confirmation card: simulated payment, local order record (the source of
- * truth), best-effort dispatch to the driver feed, then cart clear. Uses
- * `getState()` so it's callable outside React components.
+ * confirmation card.
+ *
+ * Order of operations matters and is deliberate:
+ *
+ *   1. Gate on a verified delivery location (never charge for an undeliverable
+ *      order).
+ *   2. Charge the card. The backend prices the cart itself — the totals in
+ *      `input` are display values and are NOT what gets charged.
+ *   3. Only then record the order locally, using the amounts Stripe actually
+ *      took.
+ *   4. Publish to the driver feed, with retries, because at this point the
+ *      customer's money is gone and an order that never reaches a driver is
+ *      the worst possible outcome.
+ *
+ * Uses `getState()` so it's callable outside React components.
  */
 export async function placeOrder(input: PlaceOrderInput): Promise<PlaceOrderResult> {
-  const { lines, subtotal, deliveryFee, tip, total, deliveryAddress, customer } = input;
+  const { lines, deliveryAddress, customer, tip } = input;
   if (lines.length === 0) return { ok: false, error: 'Your cart is empty.' };
 
   // Hard gate, shared by the Cart screen and Goer: no order leaves the device
-  // without a verified delivery location.
+  // without a verified delivery location. Runs before payment on purpose.
   const locationProblem = deliveryLocationProblem(deliveryAddress);
   if (locationProblem) return { ok: false, error: locationProblem };
 
@@ -40,33 +65,75 @@ export async function placeOrder(input: PlaceOrderInput): Promise<PlaceOrderResu
   const restaurant = restaurantById(rid);
   const restaurantName = restaurant?.name ?? rid;
 
+  // Generated up front: it's the Stripe idempotency key, it ties the
+  // PaymentIntent to this order server-side, and it's the row's primary key,
+  // so a retried dispatch can't create a second order.
+  const orderId = Crypto.randomUUID();
+
   try {
-    // Simulated authorize → capture (the SwiftUI app's PaymentService, minus the network).
-    await new Promise((resolve) => setTimeout(resolve, 1200));
+    const { data: sessionData } = supabase
+      ? await supabase.auth.getSession()
+      : { data: { session: null } };
+    const accessToken = sessionData.session?.access_token ?? null;
+
+    // Amounts as charged. Start from the display values and let the server
+    // overwrite them with what it actually billed.
+    let subtotal = input.subtotal;
+    let deliveryFee = input.deliveryFee;
+    let tipCharged = tip;
+    let total = input.total;
+    let paymentIntentID: string;
+
+    if (isPaymentsConfigured) {
+      const outcome = await payForOrder({ orderId, lines, tip, accessToken });
+
+      if (outcome.status === 'canceled') {
+        return { ok: false, error: 'Payment canceled.', canceled: true };
+      }
+      if (outcome.status === 'failed') {
+        return { ok: false, error: outcome.message };
+      }
+
+      paymentIntentID = outcome.paymentIntentId;
+      subtotal = outcome.quote.subtotalCents / 100;
+      deliveryFee = outcome.quote.deliveryFeeCents / 100;
+      tipCharged = outcome.quote.tipCents / 100;
+      total = outcome.quote.totalCents / 100;
+    } else {
+      // Demo mode only — no backend configured, so there is nothing to charge
+      // and no real money can be involved. Kept so the app stays fully usable
+      // offline, matching how auth and dispatch already degrade. The `demo`
+      // prefix makes these records obvious in order history.
+      paymentIntentID = `pi_demo_${Crypto.randomUUID().slice(0, 12)}`;
+    }
 
     await useOrdersStore.getState().record({
       lines,
       subtotal,
       deliveryFee,
-      tip,
+      tip: tipCharged,
       total,
       restaurantID: rid,
       restaurantName,
       deliveryAddress,
-      paymentIntentID: `pi_sim_${Crypto.randomUUID().slice(0, 12)}`,
+      paymentIntentID,
     });
 
     // Tie the dispatched order to this signed-in customer so the driver who
     // accepts it can message them back (see useOrderTracking).
     const { data: authData } = supabase ? await supabase.auth.getUser() : { data: { user: null } };
 
-    // Best-effort: surface the order on the driver dashboard. Never blocks or
-    // fails checkout — the local record above is the source of truth.
-    void publishOrderToDispatch({
+    // No longer fire-and-forget. Before payments this was best-effort because
+    // a failed dispatch cost nothing; now it means a paid order no driver can
+    // see, so it's awaited and retried. The backend treats a repeated id as an
+    // idempotent success, so retrying can't double-publish.
+    const dispatched = await publishOrderToDispatch({
+      orderId,
+      paymentIntentID: isPaymentsConfigured ? paymentIntentID : null,
       lines,
       subtotal,
       deliveryFee,
-      tip,
+      tip: tipCharged,
       total,
       restaurantName,
       restaurantAddress: restaurant?.address ?? '',
@@ -78,7 +145,20 @@ export async function placeOrder(input: PlaceOrderInput): Promise<PlaceOrderResu
     });
 
     useCartStore.getState().clear();
-    return { ok: true };
+
+    if (!dispatched) {
+      // Deliberately still `ok`: the charge went through and the order is in
+      // local history, so telling the user it failed would be a lie that
+      // invites a second payment.
+      return {
+        ok: true,
+        orderId,
+        warning:
+          "Your payment went through, but we couldn't reach dispatch. Contact support with your order if no driver picks it up.",
+      };
+    }
+
+    return { ok: true, orderId };
   } catch (err) {
     return {
       ok: false,

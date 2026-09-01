@@ -87,9 +87,17 @@ export default function CartScreen() {
 
     setProcessing(false);
     if (result.ok) {
+      // Paid but undispatched: the money is gone, so this must never look like
+      // a failure the user should retry.
+      if (result.warning) {
+        Alert.alert('Order placed', result.warning);
+      }
       // Replace (not push) so the hardware back button can't return to the
       // now-paid, cleared cart.
       router.replace('/order-confirmed');
+    } else if (result.canceled) {
+      // User dismissed the payment sheet. Nothing was charged and the cart is
+      // untouched — say nothing and leave them on it.
     } else {
       Alert.alert('Order Failed', result.error);
     }

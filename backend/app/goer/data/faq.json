@@ -1,0 +1,106 @@
+{
+  "faqs": [
+    {
+      "id": "faq-001",
+      "category": "delivery_zone",
+      "question": "Where does LocalGO deliver?",
+      "answer": "LocalGO delivers within a 3 km radius of 1510 Blvd. De Maisonneuve Ouest, Montreal — that covers Concordia's downtown campus and the surrounding neighbourhoods. Addresses outside that radius can't be saved or ordered to."
+    },
+    {
+      "id": "faq-002",
+      "category": "location",
+      "question": "Where is Al Taib located?",
+      "answer": "Al Taib (Boulangerie & Grills) is at 2125 Guy St, Montreal, QC — about a 400 m walk from Concordia's downtown campus. It is the restaurant LocalGO currently delivers from."
+    },
+    {
+      "id": "faq-003",
+      "category": "delivery_fee",
+      "question": "How much is delivery?",
+      "answer": "Delivery is a flat $5.00 CAD per order, added once at checkout regardless of how many items are in the cart. There is no delivery fee on an empty cart."
+    },
+    {
+      "id": "faq-004",
+      "category": "delivery_time",
+      "question": "How long does delivery take?",
+      "answer": "Al Taib's typical prep-and-delivery window is about 20 minutes. Once a driver accepts your order the app shows their ETA — quote it as a plus-or-minus 5 minute window, since traffic moves it around."
+    },
+    {
+      "id": "faq-005",
+      "category": "payment",
+      "question": "How do I pay?",
+      "answer": "You pay by card in the app. Only the card brand, last four digits, and expiry are ever stored on the device — never the full card number or CVV. Cash is not accepted."
+    },
+    {
+      "id": "faq-006",
+      "category": "currency",
+      "question": "What currency are prices in?",
+      "answer": "All prices are in Canadian dollars (CAD). Menu prices are before tax; delivery fee and any tip are added at checkout."
+    },
+    {
+      "id": "faq-007",
+      "category": "tipping",
+      "question": "How does tipping work?",
+      "answer": "You can tip your driver 0%, 15%, 18%, 20%, or 25% of the subtotal, or enter a custom dollar amount up to $200. The default is 18%. The tip goes entirely to the driver."
+    },
+    {
+      "id": "faq-008",
+      "category": "address",
+      "question": "Why do I need to add a delivery address before ordering?",
+      "answer": "An order can only be placed to a verified delivery location — a real street line with coordinates confirmed by autocomplete, geocoding, or your device GPS. Add or fix one on the Address screen (the \"Deliver to\" control on the home screen), then checkout again."
+    },
+    {
+      "id": "faq-009",
+      "category": "ordering",
+      "question": "How do I place an order through the chat?",
+      "answer": "Tell Goer what you want and it builds your cart, sets your tip, and shows a confirmation card with the full total. Nothing is charged until you tap Confirm on that card — Goer can never place an order on its own."
+    },
+    {
+      "id": "faq-010",
+      "category": "order_tracking",
+      "question": "How do I track my order?",
+      "answer": "Ask Goer \"where's my order\" any time. Before a driver accepts, the status is \"waiting for a driver\"; after that you get the driver's ETA and live status updates through delivery."
+    },
+    {
+      "id": "faq-011",
+      "category": "order_changes",
+      "question": "Can I change or cancel an order after placing it?",
+      "answer": "Once an order is placed the restaurant starts preparing it, so Goer can't change or cancel it. Contact support through the app for anything that needs fixing after checkout."
+    },
+    {
+      "id": "faq-012",
+      "category": "restaurants",
+      "question": "Which restaurants can I order from?",
+      "answer": "Al Taib is the partner with a live menu today. Château Kabab is listed in the app as well, but Goer currently takes orders for Al Taib only. A single cart holds items from one restaurant at a time."
+    },
+    {
+      "id": "faq-013",
+      "category": "hours",
+      "question": "What are Al Taib's hours?",
+      "answer": "Al Taib serves breakfast items (manakish and pies) from opening, and grills through lunch and dinner. If a specific item is unavailable when you order, Goer will suggest the closest alternative on the menu."
+    },
+    {
+      "id": "faq-014",
+      "category": "dietary",
+      "question": "Do you have vegetarian, vegan, or halal options?",
+      "answer": "Al Taib is a halal kitchen, so every item is halal. There are vegetarian options across the pizza, manakish, and sides sections, and vegan ones among them (zaatar manakish, spinach pie, fries, tabouleh, fatoush, hummus). Ask Goer about a specific allergy and it will check the item's allergen list."
+    },
+    {
+      "id": "faq-015",
+      "category": "allergens",
+      "question": "How do I check allergens?",
+      "answer": "Every menu item carries an allergen list (gluten, dairy, nuts, sesame, fish, shellfish, eggs, soy). Ask Goer about any item or say what you're allergic to and it will filter the menu. For a severe allergy, always confirm with the restaurant directly before ordering."
+    },
+    {
+      "id": "faq-016",
+      "category": "account",
+      "question": "Do I need an account to order?",
+      "answer": "Yes — orders, saved addresses, and chat history are tied to your account, so you sign in before ordering. Your order history stays on your device, scoped to your email."
+    },
+    {
+      "id": "faq-017",
+      "category": "chat",
+      "question": "What can Goer do?",
+      "answer": "Everything the app's UI can: browse and search Al Taib's menu, recommend items, add and remove things from your cart, set the tip, choose a saved delivery address, show the order confirmation card, and track your active and past orders."
+    }
+  ]
+}

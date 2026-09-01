@@ -7,3 +7,29 @@ fastapi==0.139.2
 uvicorn==0.51.0
 httpx==0.28.1
 python-dotenv==1.2.2
+
+# Checkout. Server-side only — creates PaymentIntents and verifies them before
+# an order is recorded (app/routers/payments.py, app/pricing.py).
+stripe==15.6.0
+
+# Goer, the multi-agent ordering chatbot (app/goer/).
+# groq     — hosts the Llama model every agent calls.
+# chromadb — persistent vector store for the menu + FAQ retrieval index. Ships
+#            an ONNX all-MiniLM-L6-v2 embedder, downloaded on first index build
+#            and cached under ~/.cache/chroma (~80 MB), so no torch is needed.
+groq==1.2.0
+chromadb==1.5.8
+
+# Optional, and deliberately not pinned in the install set:
+#
+#   sentence-transformers   Used by app/goer/rag.py when importable, matching
+#                           the SufraAI original. It pulls in torch, which has
+#                           no win-arm64 wheels — the reason rag.py falls back
+#                           to Chroma's bundled embedder instead of requiring
+#                           it. Install it on a platform where torch resolves
+#                           and the index rebuilds against it automatically.
+#
+#   pandas, mlxtend         Only for scripts/train_recommender.py, which is an
+#                           offline step whose output is committed under
+#                           app/goer/data/trained/. The script falls back to a
+#                           stdlib implementation when they're absent.

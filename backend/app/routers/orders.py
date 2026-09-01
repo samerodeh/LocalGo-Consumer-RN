@@ -20,6 +20,7 @@ import uuid
 from datetime import datetime, timezone
 from typing import Any, Literal
 
+import stripe
 from fastapi import APIRouter, Header, HTTPException
 from pydantic import BaseModel, Field
 
@@ -56,6 +57,10 @@ class OrderItem(BaseModel):
 
 class PlaceOrderBody(BaseModel):
     id: str | None = None
+    # The Stripe PaymentIntent that paid for this order. Required whenever
+    # payments are configured — see _verify_payment. Optional only so demo mode
+    # (no Stripe keys) keeps working exactly as before.
+    payment_intent_id: str | None = None
     restaurant_name: str = Field(min_length=1, max_length=200)
     restaurant_address: str = ""
     customer_name: str = "LocalGO Customer"
@@ -83,6 +88,52 @@ def _delivery_location_problem(body: PlaceOrderBody) -> str | None:
     return None
 
 
+def _verify_payment(order_id: str, body: PlaceOrderBody) -> float | None:
+    """Confirm this order was actually paid for, and return the charged total.
+
+    Returns the amount Stripe really captured, in dollars — deliberately NOT
+    `body.total`, which is client-controlled. Returns None when Stripe isn't
+    configured at all, which leaves demo mode behaving as it always has.
+
+    Raises rather than returns on every failure: an unpaid order must not reach
+    the driver feed.
+    """
+    if not config.STRIPE_CONFIGURED:
+        return None
+
+    if not body.payment_intent_id:
+        raise HTTPException(402, "This order has no payment attached.")
+
+    stripe.api_key = config.STRIPE_SECRET_KEY
+    try:
+        intent = stripe.PaymentIntent.retrieve(body.payment_intent_id)
+    except stripe.StripeError as exc:
+        print(f"[orders] intent lookup failed: {type(exc).__name__}: {exc}")
+        raise HTTPException(402, "That payment could not be verified.") from None
+
+    if intent.status != "succeeded":
+        raise HTTPException(402, f"That payment did not complete (status: {intent.status}).")
+
+    # Binds one intent to one order. Without this, a single successful charge
+    # could be replayed to create unlimited orders.
+    #
+    # NOTE: intent.metadata is a StripeObject, NOT a dict — calling .get() on it
+    # raises AttributeError rather than returning None, which would turn every
+    # real payment into a 500. Convert before touching it.
+    raw_metadata = intent.metadata
+    if raw_metadata is None:
+        metadata: dict[str, Any] = {}
+    elif isinstance(raw_metadata, dict):
+        metadata = raw_metadata
+    else:
+        metadata = raw_metadata.to_dict()
+
+    if metadata.get("order_id") != order_id:
+        raise HTTPException(402, "That payment belongs to a different order.")
+
+    return round2(intent.amount / 100)
+
+
 @router.post("/orders")
 async def place_order(body: PlaceOrderBody):
     _require_supabase()
@@ -92,6 +143,11 @@ async def place_order(body: PlaceOrderBody):
         raise HTTPException(422, problem)
 
     order_id = body.id or str(uuid.uuid4())
+
+    # Money gate. Runs before anything is written, so a failed or forged
+    # payment never produces a row the drivers can see.
+    charged_total = _verify_payment(order_id, body)
+
     row: dict[str, Any] = {
         "id": order_id,
         "order_number": f"#LG-{str(int(time.time() * 1000))[-4:]}",
@@ -99,9 +155,12 @@ async def place_order(body: PlaceOrderBody):
         "restaurant_address": body.restaurant_address,
         "customer_name": body.customer_name,
         "customer_id": body.customer_id,
+        "payment_intent_id": body.payment_intent_id,
         "dropoff_address": body.dropoff_address.strip(),
         "item_count": sum(i.quantity for i in body.items),
-        "order_total": round2(body.total),
+        # What Stripe actually took, when there was a charge. body.total is
+        # only a fallback for demo mode.
+        "order_total": charged_total if charged_total is not None else round2(body.total),
         # Placeholder — no routing in scope yet (coords are validated above
         # but the schema has no dropoff lat/lng columns).
         "distance_km": 2.5,
@@ -114,6 +173,13 @@ async def place_order(body: PlaceOrderBody):
         headers=headers(prefer="return=minimal"),
         json=row,
     )
+    if res.status_code == 409:
+        # Primary-key collision on the client-generated id: this exact order was
+        # already published. The app retries dispatch after a successful charge
+        # (see placeOrder), so treat a replay as success rather than telling a
+        # paid customer their order failed.
+        print(f"[orders] duplicate publish ignored for {order_id}")
+        return {"id": order_id, "duplicate": True}
     if res.status_code not in (200, 201):
         print(f"[orders] insert failed {res.status_code} {res.text[:300]}")
         raise HTTPException(502, "Could not publish the order to dispatch")

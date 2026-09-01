@@ -98,17 +98,6 @@ export default function LoginScreen() {
             style={styles.cta}
           />
 
-          <View style={styles.dividerRow}>
-            <View style={styles.divider} />
-            <Text style={styles.or}>or</Text>
-            <View style={styles.divider} />
-          </View>
-
-          <View style={styles.social}>
-            <SocialButton icon="logo-apple" label="Continue with Apple" dark />
-            <SocialButton icon="logo-google" label="Continue with Google" />
-          </View>
-
           <View style={{ flex: 1 }} />
 
           <Pressable style={styles.signupLink} onPress={() => router.push('/(auth)/signup')}>
@@ -118,23 +107,6 @@ export default function LoginScreen() {
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
-  );
-}
-
-function SocialButton({
-  icon,
-  label,
-  dark,
-}: {
-  icon: keyof typeof Ionicons.glyphMap;
-  label: string;
-  dark?: boolean;
-}) {
-  return (
-    <View style={[styles.socialButton, dark && styles.socialDark]}>
-      <Ionicons name={icon} size={20} color={dark ? colors.white : colors.navy} />
-      <Text style={[styles.socialLabel, dark && { color: colors.white }]}>{label}</Text>
-    </View>
   );
 }
 
@@ -175,23 +147,6 @@ const styles = StyleSheet.create({
   forgotLink: { alignSelf: 'flex-end' },
   forgotText: { color: colors.orange, fontSize: 13, fontWeight: '600' },
   cta: { marginTop: 20 },
-  dividerRow: { flexDirection: 'row', alignItems: 'center', marginVertical: 20 },
-  divider: { flex: 1, height: 1, backgroundColor: colors.gray200 },
-  or: { color: colors.textLight, fontSize: 13, paddingHorizontal: 8 },
-  social: { gap: 12 },
-  socialButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    height: 50,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.gray200,
-    backgroundColor: colors.white,
-  },
-  socialDark: { backgroundColor: colors.navy, borderColor: colors.navy },
-  socialLabel: { fontSize: 15, fontWeight: '600', color: colors.navy },
   signupLink: {
     flexDirection: 'row',
     justifyContent: 'center',

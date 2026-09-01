@@ -102,3 +102,31 @@ export async function loadCards(email: string): Promise<PaymentCard[]> {
 export async function saveCards(email: string, cards: PaymentCard[]): Promise<void> {
   await writeJSON(KEYS.cards(email.toLowerCase()), cards);
 }
+
+// MARK: - Account deletion
+
+/**
+ * Removes every trace of one account from this device: their orders, saved
+ * addresses, saved cards, Goer chat history, the demo-mode user record, and the
+ * session pointer.
+ *
+ * Server-side deletion is separate (`src/lib/account.ts`). This runs even in
+ * demo mode, where there is no server and this IS the deletion.
+ */
+export async function clearUserData(email: string): Promise<void> {
+  await AsyncStorage.multiRemove([
+    KEYS.orders(email),
+    KEYS.addresses(email),
+    KEYS.cards(email),
+    KEYS.goer(email),
+  ]);
+
+  // Demo-mode accounts live in a single map keyed by email.
+  const users = await loadUsers();
+  if (users[email]) {
+    delete users[email];
+    await writeJSON(KEYS.users, users);
+  }
+
+  await clearSession();
+}

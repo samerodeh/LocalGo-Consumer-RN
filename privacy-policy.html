@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Privacy policy for the LocalGO consumer app.">
+<title>LocalGO Privacy Policy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+
+<style>
+  /* Tokens mirror src/theme/theme.ts so this page reads as the same product
+     as the app. Light palette on bare :root; dark redefines tokens only. */
+  :root {
+    --ground:      #F8FAFC;
+    --surface:     #FFFFFF;
+    --ink:         #0F172A;
+    --ink-soft:    #334155;
+    --muted:       #64748B;
+    --rule:        #E2E8F0;
+    --rule-strong: #CBD5E1;
+    --accent:      #EA580C;
+    --accent-soft: #FFF1E7;
+    --flag:        #B45309;
+    --flag-bg:     #FEF6E7;
+    --flag-rule:   #F5C77E;
+    --shadow:      0 1px 2px rgba(15, 23, 42, .05), 0 8px 24px -12px rgba(15, 23, 42, .12);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:      #020617;
+      --surface:     #0F172A;
+      --ink:         #E2E8F0;
+      --ink-soft:    #CBD5E1;
+      --muted:       #94A3B8;
+      --rule:        #1E293B;
+      --rule-strong: #334155;
+      --accent:      #FB923C;
+      --accent-soft: #2A1608;
+      --flag:        #FBBF24;
+      --flag-bg:     #241A05;
+      --flag-rule:   #78500F;
+      --shadow:      0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px -12px rgba(0, 0, 0, .7);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:      #020617;
+    --surface:     #0F172A;
+    --ink:         #E2E8F0;
+    --ink-soft:    #CBD5E1;
+    --muted:       #94A3B8;
+    --rule:        #1E293B;
+    --rule-strong: #334155;
+    --accent:      #FB923C;
+    --accent-soft: #2A1608;
+    --flag:        #FBBF24;
+    --flag-bg:     #241A05;
+    --flag-rule:   #78500F;
+    --shadow:      0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px -12px rgba(0, 0, 0, .7);
+  }
+
+  body {
+    background: var(--ground);
+    color: var(--ink-soft);
+    font-family: "Barlow", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 46rem;
+    margin: 0 auto;
+    padding: clamp(2rem, 5vw, 4rem) clamp(1.1rem, 4vw, 2rem) 5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.75rem;
+  }
+
+  /* ── Masthead ─────────────────────────────────────────────────────────── */
+  .masthead { display: flex; flex-direction: column; gap: .85rem; }
+  .brand {
+    display: flex; align-items: center; gap: .6rem;
+    font-family: "Barlow Condensed", "Barlow", sans-serif;
+    font-weight: 700; font-size: 1.35rem; letter-spacing: .04em;
+    text-transform: uppercase; color: var(--ink);
+  }
+  .mark {
+    width: 1.9rem; height: 1.9rem; border-radius: 9px;
+    background: linear-gradient(140deg, #F97316, #EA580C);
+    display: grid; place-items: center;
+    color: #fff; font-size: .95rem; font-weight: 700;
+    font-family: "Barlow Condensed", sans-serif;
+    flex-shrink: 0;
+  }
+  h1 {
+    font-family: "Barlow Condensed", "Barlow", sans-serif;
+    font-weight: 700;
+    font-size: clamp(2.4rem, 7vw, 3.4rem);
+    line-height: 1.02;
+    letter-spacing: -.01em;
+    color: var(--ink);
+    text-wrap: balance;
+    margin: 0;
+  }
+  .dateline {
+    display: flex; flex-wrap: wrap; gap: .5rem 1.4rem;
+    font-size: .82rem; letter-spacing: .07em; text-transform: uppercase;
+    font-weight: 600; color: var(--muted);
+    padding-top: .35rem; border-top: 2px solid var(--ink);
+  }
+
+  /* ── Draft flag ───────────────────────────────────────────────────────── */
+  .draft {
+    background: var(--flag-bg);
+    border: 1px solid var(--flag-rule);
+    border-left: 4px solid var(--flag);
+    border-radius: 10px;
+    padding: 1.1rem 1.25rem;
+    display: flex; flex-direction: column; gap: .6rem;
+  }
+  .draft h2 {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 1.15rem; font-weight: 700; letter-spacing: .05em;
+    text-transform: uppercase; color: var(--flag); margin: 0;
+  }
+  .draft p, .draft li { color: var(--ink-soft); font-size: .95rem; margin: 0; }
+  .draft ul { margin: 0; padding-left: 1.15rem; display: flex; flex-direction: column; gap: .3rem; }
+
+  /* ── Sections ─────────────────────────────────────────────────────────── */
+  section { display: flex; flex-direction: column; gap: .9rem; }
+  h2.sec {
+    font-family: "Barlow Condensed", "Barlow", sans-serif;
+    font-size: 1.6rem; font-weight: 700; letter-spacing: .005em;
+    color: var(--ink); margin: 0; text-wrap: balance;
+    display: flex; align-items: baseline; gap: .7rem;
+  }
+  h2.sec .n {
+    font-size: .8rem; font-weight: 600; letter-spacing: .1em;
+    color: var(--accent); font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+  }
+  h3 {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 1.15rem; font-weight: 600; letter-spacing: .02em;
+    color: var(--ink); margin: .5rem 0 0;
+  }
+  p { margin: 0; }
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+  strong { color: var(--ink); font-weight: 600; }
+  ul.body { margin: 0; padding-left: 1.2rem; display: flex; flex-direction: column; gap: .45rem; }
+
+  /* ── Tables ───────────────────────────────────────────────────────────── */
+  .tablewrap {
+    overflow-x: auto;
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+  }
+  table { border-collapse: collapse; width: 100%; min-width: 34rem; font-size: .93rem; }
+  th, td { text-align: left; padding: .7rem .9rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: .82rem; font-weight: 600; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); background: var(--ground); white-space: nowrap;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  td:first-child { color: var(--ink); font-weight: 500; }
+
+  .callout {
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: .85rem 1.1rem;
+    font-size: .95rem;
+  }
+
+  footer {
+    border-top: 1px solid var(--rule);
+    padding-top: 1.5rem;
+    font-size: .88rem;
+    color: var(--muted);
+    display: flex; flex-direction: column; gap: .5rem;
+  }
+  .fill {
+    font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+    font-size: .85em;
+    background: var(--flag-bg);
+    color: var(--flag);
+    border: 1px dashed var(--flag-rule);
+    border-radius: 4px;
+    padding: .1em .4em;
+  }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="brand"><span class="mark">LG</span> LocalGO</div>
+    <h1>Privacy Policy</h1>
+    <div class="dateline">
+      <span>Effective 1 September 2026</span>
+      <span>Consumer app · Android</span>
+      <span>Montréal, Québec</span>
+    </div>
+  </header>
+
+  <div class="draft">
+    <h2>Draft — complete before submitting to Google Play</h2>
+    <p>Three things must be filled in. They are marked <span class="fill">like this</span> throughout.</p>
+    <ul>
+      <li>A contact email address you will actually monitor for privacy and deletion requests.</li>
+      <li>The legal name this app is published under — your own name, or a registered business.</li>
+      <li>Confirmation that the deletion process in section 9 is one you can honour by hand today.</li>
+    </ul>
+    <p>This is a technically accurate description of what the app does, written from its source
+      code. It is not legal advice — have someone qualified review it before you rely on it,
+      particularly for Québec's Law 25.</p>
+  </div>
+
+  <section>
+    <h2 class="sec"><span class="n">01</span>Who we are</h2>
+    <p>LocalGO is a food-delivery app operating in Montréal. It is published by
+      <span class="fill">YOUR LEGAL NAME</span>, who is the party responsible for the personal
+      information described here. You can reach us at
+      <span class="fill">YOUR CONTACT EMAIL</span>.</p>
+    <p>This policy covers the <strong>LocalGO consumer app</strong>. The separate LocalGO Driver
+      app, used by delivery drivers, is covered by its own policy.</p>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="n">02</span>What we collect</h2>
+    <p>Only what the app needs to take an order and get it to your door.</p>
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th>Information</th><th>Why we need it</th><th>When</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Name</td><td>Identifies you to the driver delivering your order</td><td>At sign-up</td></tr>
+          <tr><td>Email address</td><td>Your account identifier and sign-in credential</td><td>At sign-up</td></tr>
+          <tr><td>Delivery address</td><td>Where the order goes</td><td>When you add an address</td></tr>
+          <tr><td>Precise location</td><td>Optional. Fills in your current address when you tap to use it</td><td>Only if you grant permission</td></tr>
+          <tr><td>Order history</td><td>Shows past orders and lets us handle problems with them</td><td>Each time you order</td></tr>
+          <tr><td>Notification token</td><td>Delivers order updates to your device</td><td>If you allow notifications</td></tr>
+          <tr><td>Assistant messages</td><td>What you type to the in-app assistant, so it can answer</td><td>When you use the assistant</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout">
+      <strong>We never see your card number.</strong> Payments are handled inside Stripe's own
+      secure payment sheet. Your card details go directly to Stripe and are never sent to, stored
+      by, or visible to LocalGO. We keep only a reference to the transaction and its amount.
+    </div>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="n">03</span>How we use it</h2>
+    <ul class="body">
+      <li>To create and maintain your account.</li>
+      <li>To price, charge for, and deliver your orders.</li>
+      <li>To share the delivery address and your name with the driver who accepts your order — they
+        cannot complete the delivery without it.</li>
+      <li>To send order-status notifications, if you allowed them.</li>
+      <li>To answer questions in the in-app assistant.</li>
+    </ul>
+    <p>We do not sell your personal information. We do not use it for advertising, and the app
+      contains no ads or advertising trackers.</p>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="n">04</span>Who else receives it</h2>
+    <p>LocalGO runs on services operated by other companies. Each one receives only what its job
+      requires, and each has its own privacy policy governing what it does with that data.</p>
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th>Service</th><th>What it receives</th><th>Purpose</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Stripe</td><td>Card details (directly from you), order amount</td><td>Processing payments</td></tr>
+          <tr><td>Supabase</td><td>Account, profile, orders, notification token</td><td>Database and sign-in</td></tr>
+          <tr><td>Render</td><td>Order and assistant requests in transit</td><td>Hosting our server</td></tr>
+          <tr><td>Photon (Komoot)</td><td>Addresses you type; coordinates when you use current location</td><td>Address search and lookup</td></tr>
+          <tr><td>Groq</td><td>Assistant messages, plus your current cart and delivery address</td><td>Powering the assistant's replies</td></tr>
+          <tr><td>Expo</td><td>Notification token</td><td>Delivering push notifications</td></tr>
+          <tr><td>Delivery drivers</td><td>Your name, delivery address, order contents</td><td>Completing your delivery</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>We may also disclose information where the law requires it.</p>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="n">05</span>Location</h2>
+    <p>Location is optional and the app asks before using it. Granting it lets you fill in your
+      current address with one tap instead of typing it. Decline, and you can still type an address
+      and order normally — nothing else in the app depends on location.</p>
+    <p>We use location only at the moment you ask us to. The app does not track you in the
+      background or record where you go.</p>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="n">06</span>The in-app assistant</h2>
+    <p>LocalGO includes an assistant that can search the menu, build your cart, and start checkout
+      from a conversation. To answer you, it sends your messages — along with what is currently in
+      your cart and your delivery address — to <strong>Groq</strong>, which runs the language model
+      that writes the reply.</p>
+    <p>Please don't type anything into the assistant you wouldn't want processed by a third party.
+      It only needs to know about food.</p>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="n">07</span>How long we keep it</h2>
+    <ul class="body">
+      <li><strong>Account details</strong> — until you delete your account.</li>
+      <li><strong>Orders</strong> — retained after an account is deleted, with your name, delivery
+        address, and account link removed from them. We keep accurate business and tax records; we
+        do not keep your identity attached to them.</li>
+      <li><strong>Notification token</strong> — until you turn off notifications or delete your account.</li>
+      <li><strong>Order and address history on your phone</strong> — stored on the device itself and
+        removed when you uninstall the app.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="n">08</span>Security</h2>
+    <p>Everything the app sends travels over encrypted HTTPS connections. Passwords are handled by
+      Supabase Auth and are never stored by us in a readable form. Access to the order database is
+      restricted per-account by row-level security rules, so one customer cannot read another's
+      orders.</p>
+    <p>No system is perfectly secure, and we cannot promise otherwise.</p>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="n">09</span>Your rights, and deleting your account</h2>
+    <p>You can ask us to show you the personal information we hold about you, correct it, or delete
+      it entirely. Under Québec's Law 25 and Canada's PIPEDA you also have the right to withdraw
+      consent and to complain to a regulator.</p>
+    <h3>To delete your account</h3>
+    <p>Open <strong>Settings</strong> in the app and tap <strong>Delete Account</strong>. It takes
+      effect immediately — no waiting period, no email required. This removes your account, your
+      profile, your saved addresses and payment cards, your assistant chat history, and your
+      notification token.</p>
+    <p>Past orders are kept as business records, with your name, address, and account link stripped
+      off them, as described in section 7. Your own messages to a driver are deleted.</p>
+    <p>If you can no longer sign in, email <span class="fill">YOUR CONTACT EMAIL</span> from the
+      address your account uses, with the subject "Delete my account", and we will do it for you
+      within <strong>30 days</strong>.</p>
+    <p>One thing outside our control: <strong>Stripe</strong> keeps its own record of payments it
+      processed, for its own legal and accounting obligations. We cannot delete those, and neither
+      can you — but they are held by Stripe under its privacy policy, not by us.</p>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="n">10</span>Children</h2>
+    <p>LocalGO is intended for adults. It is not directed at children, and we do not knowingly
+      collect personal information from anyone under 18. If you believe a child has given us their
+      information, contact us and we will remove it.</p>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="n">11</span>Changes to this policy</h2>
+    <p>If we change how the app handles personal information, we will update this page and move the
+      effective date at the top. Significant changes will be announced in the app.</p>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="n">12</span>Contact</h2>
+    <p>Questions about this policy, or about your information, go to
+      <span class="fill">YOUR CONTACT EMAIL</span>. We aim to respond within 30 days.</p>
+  </section>
+
+  <footer>
+    <p>LocalGO Consumer · <code>com.samerodeh.localgoconsumer</code></p>
+    <p>Effective 1 September 2026.</p>
+  </footer>
+
+</div>
+
+</body>
+</html>

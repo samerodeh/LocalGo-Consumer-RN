@@ -1,0 +1,2296 @@
+[
+  {
+    "id": "create-your-bowl-500-g",
+    "name_en": "Create your bowl (500 g)",
+    "name_ar": "اصنع وعاءك",
+    "category": "Create your bowl",
+    "meal_period": "all-day",
+    "description_en": "Pick up to 5 items of approximately 100 grams each",
+    "description_ar": "",
+    "ingredients": [],
+    "allergens": [],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "vegan",
+      "gluten-free",
+      "no-dairy",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 12.5,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13143/create_your_bowl_cad88be568.png",
+    "available": true,
+    "alternativeItemIds": [
+      "create-your-bowl-1-kg"
+    ]
+  },
+  {
+    "id": "create-your-bowl-1-kg",
+    "name_en": "Create your bowl (1 kg)",
+    "name_ar": "اصنع وعاءك",
+    "category": "Create your bowl",
+    "meal_period": "all-day",
+    "description_en": "Pick up to 10 items of approximately 100 grams each",
+    "description_ar": "",
+    "ingredients": [],
+    "allergens": [],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "vegan",
+      "gluten-free",
+      "no-dairy",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 25.0,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13143/create_your_bowl_cad88be568.png",
+    "available": true,
+    "alternativeItemIds": [
+      "create-your-bowl-500-g"
+    ]
+  },
+  {
+    "id": "cheese-pizza-slice",
+    "name_en": "Cheese Pizza Slice",
+    "name_ar": "جبنة بيتزا شريحة",
+    "category": "Pizza Slices",
+    "meal_period": "all-day",
+    "description_en": "Sauce, mozzarella.",
+    "description_ar": "",
+    "ingredients": [
+      "mozzarella",
+      "sauce"
+    ],
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 5.5,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13143/cheese_slice_0c1b5d0a47.png",
+    "available": true,
+    "alternativeItemIds": [
+      "pepperoni-pizza-slice",
+      "veggie-pizza-slice",
+      "hawaiian-pizza-slice"
+    ]
+  },
+  {
+    "id": "pepperoni-pizza-slice",
+    "name_en": "Pepperoni Pizza Slice",
+    "name_ar": "بيبروني بيتزا شريحة",
+    "category": "Pizza Slices",
+    "meal_period": "all-day",
+    "description_en": "Sauce, mozzarella, and pepperoni.",
+    "description_ar": "",
+    "ingredients": [
+      "mozzarella",
+      "pepperoni",
+      "sauce"
+    ],
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "diet_tags": [
+      "halal",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 6.5,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13143/pepperoni_slice_f644633f4c.png",
+    "available": true,
+    "alternativeItemIds": [
+      "veggie-pizza-slice",
+      "hawaiian-pizza-slice",
+      "spinach-pizza-slice"
+    ]
+  },
+  {
+    "id": "all-dressed-pizza-slice",
+    "name_en": "All Dressed Pizza Slice",
+    "name_ar": "كامل الإضافات بيتزا شريحة",
+    "category": "Pizza Slices",
+    "meal_period": "all-day",
+    "description_en": "Sauce, mozzarella, pepperoni, mushrooms, and green pepper.",
+    "description_ar": "",
+    "ingredients": [
+      "green pepper",
+      "mozzarella",
+      "mushrooms",
+      "pepperoni",
+      "sauce"
+    ],
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "diet_tags": [
+      "halal",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 6.75,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13143/all_dressed_slice_c19a53d156.png",
+    "available": true,
+    "alternativeItemIds": [
+      "chicken-pizza-slice",
+      "mexican-pizza-slice",
+      "pepperoni-pizza-slice"
+    ]
+  },
+  {
+    "id": "veggie-pizza-slice",
+    "name_en": "Veggie Pizza Slice",
+    "name_ar": "خضار بيتزا شريحة",
+    "category": "Pizza Slices",
+    "meal_period": "all-day",
+    "description_en": "Sauce, mozzarella, black olives, mushrooms, green peppers, and fresh tomatoes.",
+    "description_ar": "",
+    "ingredients": [
+      "black olives",
+      "fresh tomatoes",
+      "green peppers",
+      "mozzarella",
+      "mushrooms",
+      "sauce"
+    ],
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 6.5,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13143/veggie_slice_ccee3ab83f.png",
+    "available": true,
+    "alternativeItemIds": [
+      "pepperoni-pizza-slice",
+      "hawaiian-pizza-slice",
+      "spinach-pizza-slice"
+    ]
+  },
+  {
+    "id": "chicken-pizza-slice",
+    "name_en": "Chicken Pizza Slice",
+    "name_ar": "دجاج بيتزا شريحة",
+    "category": "Pizza Slices",
+    "meal_period": "all-day",
+    "description_en": "Sauce, mozzarella, chicken, and fresh tomatoes.",
+    "description_ar": "",
+    "ingredients": [
+      "chicken",
+      "fresh tomatoes",
+      "mozzarella",
+      "sauce"
+    ],
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "diet_tags": [
+      "halal",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 6.75,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13143/chicken_slice_f982ea5d23.png",
+    "available": true,
+    "alternativeItemIds": [
+      "all-dressed-pizza-slice",
+      "mexican-pizza-slice",
+      "pepperoni-pizza-slice"
+    ]
+  },
+  {
+    "id": "mexican-pizza-slice",
+    "name_en": "Mexican Pizza Slice",
+    "name_ar": "مكسيكي بيتزا شريحة",
+    "category": "Pizza Slices",
+    "meal_period": "all-day",
+    "description_en": "Sauce, mozzarella, spicy beef, fresh tomatoes, banana pepper, and onions.",
+    "description_ar": "",
+    "ingredients": [
+      "fresh tomatoes",
+      "mozzarella",
+      "onions",
+      "sauce",
+      "spicy beef"
+    ],
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "diet_tags": [
+      "halal",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 6.75,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13143/mexican_slice_a47a91c7dc.png",
+    "available": true,
+    "alternativeItemIds": [
+      "all-dressed-pizza-slice",
+      "chicken-pizza-slice",
+      "pepperoni-pizza-slice"
+    ]
+  },
+  {
+    "id": "hawaiian-pizza-slice",
+    "name_en": "Hawaiian Pizza Slice",
+    "name_ar": "هاوايي بيتزا شريحة",
+    "category": "Pizza Slices",
+    "meal_period": "all-day",
+    "description_en": "Sauce, mozzarella, beef, and pineapple.",
+    "description_ar": "",
+    "ingredients": [
+      "beef",
+      "mozzarella",
+      "pineapple",
+      "sauce"
+    ],
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "diet_tags": [
+      "halal",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 6.5,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13143/hawaiian_slice_37971aa470.png",
+    "available": true,
+    "alternativeItemIds": [
+      "pepperoni-pizza-slice",
+      "veggie-pizza-slice",
+      "spinach-pizza-slice"
+    ]
+  },
+  {
+    "id": "spinach-pizza-slice",
+    "name_en": "Spinach Pizza Slice",
+    "name_ar": "سبانخ بيتزا شريحة",
+    "category": "Pizza Slices",
+    "meal_period": "all-day",
+    "description_en": "Sauce, mozzarella, spinach, and black olives.",
+    "description_ar": "",
+    "ingredients": [
+      "black olives",
+      "mozzarella",
+      "sauce",
+      "spinach"
+    ],
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 6.5,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13143/spinach_slice_0c8548dca0.png",
+    "available": true,
+    "alternativeItemIds": [
+      "pepperoni-pizza-slice",
+      "veggie-pizza-slice",
+      "hawaiian-pizza-slice"
+    ]
+  },
+  {
+    "id": "tuna-pizza-slice",
+    "name_en": "Tuna Pizza Slice",
+    "name_ar": "بيتزا شريحة تونة",
+    "category": "Pizza Slices",
+    "meal_period": "all-day",
+    "description_en": "Sauce, mozzarella, tuna, garlic, and fresh tomatoes.",
+    "description_ar": "",
+    "ingredients": [
+      "fresh tomatoes",
+      "garlic",
+      "mozzarella",
+      "sauce",
+      "tuna"
+    ],
+    "allergens": [
+      "dairy",
+      "fish",
+      "gluten"
+    ],
+    "diet_tags": [
+      "halal",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 7.0,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13143/tuna_slice_15fd28f570.png",
+    "available": true,
+    "alternativeItemIds": [
+      "all-dressed-pizza-slice",
+      "chicken-pizza-slice",
+      "mexican-pizza-slice"
+    ]
+  },
+  {
+    "id": "cheese-pizza",
+    "name_en": "Cheese Pizza",
+    "name_ar": "جبنة بيتزا",
+    "category": "Pizza",
+    "meal_period": "all-day",
+    "description_en": "Sauce, mozzarella.",
+    "description_ar": "",
+    "ingredients": [
+      "mozzarella",
+      "sauce"
+    ],
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 15.18,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13125/cheese_pizza_d9a19c6e43.png",
+    "available": true,
+    "alternativeItemIds": [
+      "pepperoni-pizza",
+      "all-dressed-pizza",
+      "veggie-pizza"
+    ]
+  },
+  {
+    "id": "pepperoni-pizza",
+    "name_en": "Pepperoni Pizza",
+    "name_ar": "بيبروني بيتزا",
+    "category": "Pizza",
+    "meal_period": "all-day",
+    "description_en": "Sauce, mozzarella, and pepperoni.",
+    "description_ar": "",
+    "ingredients": [
+      "mozzarella",
+      "pepperoni",
+      "sauce"
+    ],
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "diet_tags": [
+      "halal",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 17.94,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13125/pepperoni_pizza_6ba780a784.png",
+    "available": true,
+    "alternativeItemIds": [
+      "all-dressed-pizza",
+      "veggie-pizza",
+      "chicken-pizza"
+    ]
+  },
+  {
+    "id": "all-dressed-pizza",
+    "name_en": "All Dressed Pizza",
+    "name_ar": "كامل الإضافات بيتزا",
+    "category": "Pizza",
+    "meal_period": "all-day",
+    "description_en": "Sauce, mozzarella, pepperoni, mushrooms, and green pepper.",
+    "description_ar": "",
+    "ingredients": [
+      "green pepper",
+      "mozzarella",
+      "mushrooms",
+      "pepperoni",
+      "sauce"
+    ],
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "diet_tags": [
+      "halal",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 19.32,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13125/all_dressed_pizza_bb4e2f9ccd.png",
+    "available": true,
+    "alternativeItemIds": [
+      "veggie-pizza",
+      "pepperoni-pizza",
+      "chicken-pizza"
+    ]
+  },
+  {
+    "id": "veggie-pizza",
+    "name_en": "Veggie Pizza",
+    "name_ar": "خضار بيتزا",
+    "category": "Pizza",
+    "meal_period": "all-day",
+    "description_en": "Sauce, mozzarella, black olives, mushrooms, green peppers, and fresh tomatoes.",
+    "description_ar": "",
+    "ingredients": [
+      "black olives",
+      "fresh tomatoes",
+      "green peppers",
+      "mozzarella",
+      "mushrooms",
+      "sauce"
+    ],
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 19.32,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13125/vegetarian_pizza_f4cf83e13c.png",
+    "available": true,
+    "alternativeItemIds": [
+      "all-dressed-pizza",
+      "pepperoni-pizza",
+      "chicken-pizza"
+    ]
+  },
+  {
+    "id": "chicken-pizza",
+    "name_en": "Chicken Pizza",
+    "name_ar": "دجاج بيتزا",
+    "category": "Pizza",
+    "meal_period": "all-day",
+    "description_en": "Sauce, mozzarella, chicken, and fresh tomatoes.",
+    "description_ar": "",
+    "ingredients": [
+      "chicken",
+      "fresh tomatoes",
+      "mozzarella",
+      "sauce"
+    ],
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "diet_tags": [
+      "halal",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 20.7,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13125/chicken_pizza_be9158cb2b.png",
+    "available": true,
+    "alternativeItemIds": [
+      "mexican-pizza",
+      "hawaiian-pizza",
+      "spinach-pizza"
+    ]
+  },
+  {
+    "id": "mexican-pizza",
+    "name_en": "Mexican Pizza",
+    "name_ar": "مكسيكي بيتزا",
+    "category": "Pizza",
+    "meal_period": "all-day",
+    "description_en": "Sauce, mozzarella, spicy beef, fresh tomatoes, banana pepper, and onions.",
+    "description_ar": "",
+    "ingredients": [
+      "fresh tomatoes",
+      "mozzarella",
+      "onions",
+      "sauce",
+      "spicy beef"
+    ],
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "diet_tags": [
+      "halal",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 20.7,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13150/Pizza_Mexicaine_b807a305c7.png",
+    "available": true,
+    "alternativeItemIds": [
+      "chicken-pizza",
+      "hawaiian-pizza",
+      "spinach-pizza"
+    ]
+  },
+  {
+    "id": "hawaiian-pizza",
+    "name_en": "Hawaiian Pizza",
+    "name_ar": "هاوايي بيتزا",
+    "category": "Pizza",
+    "meal_period": "all-day",
+    "description_en": "Sauce, mozzarella, beef, and pineapple.",
+    "description_ar": "",
+    "ingredients": [
+      "beef",
+      "mozzarella",
+      "pineapple",
+      "sauce"
+    ],
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "diet_tags": [
+      "halal",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 20.7,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13125/hawaian_pizza_6bbfef0021.png",
+    "available": true,
+    "alternativeItemIds": [
+      "chicken-pizza",
+      "mexican-pizza",
+      "spinach-pizza"
+    ]
+  },
+  {
+    "id": "spinach-pizza",
+    "name_en": "Spinach Pizza",
+    "name_ar": "سبانخ بيتزا",
+    "category": "Pizza",
+    "meal_period": "all-day",
+    "description_en": "Sauce, mozzarella, spinach, and black olives.",
+    "description_ar": "",
+    "ingredients": [
+      "black olives",
+      "mozzarella",
+      "sauce",
+      "spinach"
+    ],
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 20.7,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13143/Spinach_pizza_cee764e693.png",
+    "available": true,
+    "alternativeItemIds": [
+      "chicken-pizza",
+      "mexican-pizza",
+      "hawaiian-pizza"
+    ]
+  },
+  {
+    "id": "tuna-pizza",
+    "name_en": "Tuna Pizza",
+    "name_ar": "بيتزا تونة",
+    "category": "Pizza",
+    "meal_period": "all-day",
+    "description_en": "Sauce, mozzarella, tuna, garlic, and fresh tomatoes.",
+    "description_ar": "",
+    "ingredients": [
+      "fresh tomatoes",
+      "garlic",
+      "mozzarella",
+      "sauce",
+      "tuna"
+    ],
+    "allergens": [
+      "dairy",
+      "fish",
+      "gluten"
+    ],
+    "diet_tags": [
+      "halal",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 22.08,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13143/tuna_pizza_9f16649fdc.png",
+    "available": true,
+    "alternativeItemIds": [
+      "chicken-pizza",
+      "mexican-pizza",
+      "hawaiian-pizza"
+    ]
+  },
+  {
+    "id": "zaatar-manakish",
+    "name_en": "Zaatar Manakish",
+    "name_ar": "مناقيش زعتر",
+    "category": "Manakish and Pies",
+    "meal_period": "breakfast",
+    "description_en": "Thyme, sumac, and sesame seeds.",
+    "description_ar": "",
+    "ingredients": [
+      "sesame seeds",
+      "sumac",
+      "thyme"
+    ],
+    "allergens": [
+      "gluten",
+      "sesame"
+    ],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "vegan",
+      "no-dairy",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 4.5,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13143/3f152295_8aa9_4fda_b772_59656214fbc3_retina_large_jpeg_17c10f7865.jpeg",
+    "available": true,
+    "alternativeItemIds": [
+      "spinach-pie",
+      "cheese-pie",
+      "half-spinach-half-cheese-pie"
+    ]
+  },
+  {
+    "id": "cheese-manakish",
+    "name_en": "Cheese Manakish",
+    "name_ar": "مناقيش جبنة",
+    "category": "Manakish and Pies",
+    "meal_period": "breakfast",
+    "description_en": "Mozzarella and akawi cheese.",
+    "description_ar": "",
+    "ingredients": [
+      "akawi cheese",
+      "mozzarella"
+    ],
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 7.0,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13143/c9960829_d3c1_456b_9444_ab999d270275_retina_large_jpeg_e8c94c72bd.jpeg",
+    "available": true,
+    "alternativeItemIds": [
+      "kafta-manakish",
+      "lahmbajine-manakish",
+      "lahmbajine-and-cheese-manakish"
+    ]
+  },
+  {
+    "id": "zaatar-and-chesse-manakish",
+    "name_en": "Zaatar and Chesse Manakish",
+    "name_ar": "مناقيش زعتر و",
+    "category": "Manakish and Pies",
+    "meal_period": "breakfast",
+    "description_en": "Thyme, sumac, sesame seeds, mozzarella, and akawi cheese.",
+    "description_ar": "",
+    "ingredients": [
+      "akawi cheese",
+      "mozzarella",
+      "sesame seeds",
+      "sumac",
+      "thyme"
+    ],
+    "allergens": [
+      "dairy",
+      "gluten",
+      "sesame"
+    ],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 6.0,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13143/a76bf0f8_e501_425b_8b0f_7e2cc79d1dbd_retina_large_jpeg_57e925129b.jpeg",
+    "available": true,
+    "alternativeItemIds": [
+      "kafta-manakish",
+      "lahmbajine-and-cheese-manakish",
+      "feta-manakish"
+    ]
+  },
+  {
+    "id": "kafta-manakish",
+    "name_en": "Kafta Manakish",
+    "name_ar": "مناقيش كفتة",
+    "category": "Manakish and Pies",
+    "meal_period": "breakfast",
+    "description_en": "Ground-beef, green peppers, and kafta spices.",
+    "description_ar": "",
+    "ingredients": [
+      "green peppers",
+      "ground-beef",
+      "kafta spices"
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_tags": [
+      "halal",
+      "no-dairy",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 6.5,
+    "image_url": null,
+    "available": true,
+    "alternativeItemIds": [
+      "lahmbajine-and-cheese-manakish",
+      "feta-manakish",
+      "cheese-manakish"
+    ]
+  },
+  {
+    "id": "sojuk-manakish",
+    "name_en": "Sojuk Manakish",
+    "name_ar": "مناقيش سجق",
+    "category": "Manakish and Pies",
+    "meal_period": "breakfast",
+    "description_en": "Ground-beef, sujok spices, and tomatoes.",
+    "description_ar": "",
+    "ingredients": [
+      "ground-beef",
+      "sujok spices",
+      "tomatoes"
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_tags": [
+      "halal",
+      "no-dairy",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 11.99,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13143/OCN_1391_42c877f14a.jpg",
+    "available": true,
+    "alternativeItemIds": [
+      "shish-taouk-poulet",
+      "shawarma-boeuf",
+      "falafel-sandwich"
+    ]
+  },
+  {
+    "id": "lahmbajine-manakish",
+    "name_en": "Lahmbajine Manakish",
+    "name_ar": "لحم بعجين مناقيش",
+    "category": "Manakish and Pies",
+    "meal_period": "breakfast",
+    "description_en": "Ground-beef tomato puree, onions, and seven spices.",
+    "description_ar": "",
+    "ingredients": [
+      "ground-beef",
+      "onions",
+      "seven spices",
+      "tomato puree"
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_tags": [
+      "halal",
+      "no-dairy",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 7.5,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13143/OCN_1386_98464ae4cf.jpg",
+    "available": true,
+    "alternativeItemIds": [
+      "feta-fromage",
+      "cheese-manakish",
+      "kafta-manakish"
+    ]
+  },
+  {
+    "id": "lahmbajine-and-cheese-manakish",
+    "name_en": "Lahmbajine and cheese Manakish",
+    "name_ar": "لحم بعجين مناقيش جبنة و",
+    "category": "Manakish and Pies",
+    "meal_period": "breakfast",
+    "description_en": "Ground-beef tomato puree, onions, seven spices, and mozzarella.",
+    "description_ar": "",
+    "ingredients": [
+      "ground-beef",
+      "mozzarella",
+      "onions",
+      "seven spices",
+      "tomato puree"
+    ],
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "diet_tags": [
+      "halal",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 6.5,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13143/OCN_1385_c8c174407c.jpg",
+    "available": true,
+    "alternativeItemIds": [
+      "kafta-manakish",
+      "feta-manakish",
+      "cheese-manakish"
+    ]
+  },
+  {
+    "id": "feta-manakish",
+    "name_en": "Feta Manakish",
+    "name_ar": "مناقيش فيتا",
+    "category": "Manakish and Pies",
+    "meal_period": "breakfast",
+    "description_en": "Feta and mozzarella cheese and parsley.",
+    "description_ar": "",
+    "ingredients": [
+      "feta",
+      "mozzarella",
+      "parsley"
+    ],
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 6.5,
+    "image_url": null,
+    "available": true,
+    "alternativeItemIds": [
+      "kafta-manakish",
+      "lahmbajine-and-cheese-manakish",
+      "cheese-manakish"
+    ]
+  },
+  {
+    "id": "spinach-pie",
+    "name_en": "Spinach Pie",
+    "name_ar": "سبانخ فطيرة",
+    "category": "Manakish and Pies",
+    "meal_period": "breakfast",
+    "description_en": "Spinach, sumac, lemon, and onion.",
+    "description_ar": "",
+    "ingredients": [
+      "lemon",
+      "onion",
+      "spinach",
+      "sumac"
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "vegan",
+      "no-dairy",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 4.5,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13143/4f6b2bc2_5c70_4414_bb10_c7f5c6732ea6_retina_large_jpeg_852de02cbe.jpeg",
+    "available": true,
+    "alternativeItemIds": [
+      "zaatar-manakish",
+      "cheese-pie",
+      "half-spinach-half-cheese-pie"
+    ]
+  },
+  {
+    "id": "cheese-pie",
+    "name_en": "Cheese Pie",
+    "name_ar": "جبنة فطيرة",
+    "category": "Manakish and Pies",
+    "meal_period": "breakfast",
+    "description_en": "Mozzarella and sesame seeds.",
+    "description_ar": "",
+    "ingredients": [
+      "mozzarella",
+      "sesame seeds"
+    ],
+    "allergens": [
+      "dairy",
+      "gluten",
+      "sesame"
+    ],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 5.0,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13143/4cce6cf2_0162_45c8_9be2_eafc5de43ea9_retina_large_jpeg_de946c14f4.jpeg",
+    "available": true,
+    "alternativeItemIds": [
+      "half-spinach-half-cheese-pie",
+      "zaatar-manakish",
+      "spinach-pie"
+    ]
+  },
+  {
+    "id": "half-spinach-half-cheese-pie",
+    "name_en": "Half-spinach /half-Cheese pie",
+    "name_ar": "سبانخ جبنة نصف فطيرة",
+    "category": "Manakish and Pies",
+    "meal_period": "breakfast",
+    "description_en": "Spinach, sumac lemon, onion, and mozzarella.",
+    "description_ar": "",
+    "ingredients": [
+      "lemon",
+      "mozzarella",
+      "onion",
+      "spinach",
+      "sumac"
+    ],
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 5.0,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13143/baa0c76e_b0d1_4a37_a66d_d822d2300f72_retina_large_jpeg_25574eff3d.jpeg",
+    "available": true,
+    "alternativeItemIds": [
+      "cheese-pie",
+      "zaatar-manakish",
+      "spinach-pie"
+    ]
+  },
+  {
+    "id": "falafel-sandwich",
+    "name_en": "Falafel Sandwich",
+    "name_ar": "ساندويش فلافل",
+    "category": "Manakish and Pies",
+    "meal_period": "breakfast",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [],
+    "allergens": [
+      "gluten",
+      "sesame"
+    ],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "vegan",
+      "no-dairy",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 9.0,
+    "image_url": null,
+    "available": true,
+    "alternativeItemIds": [
+      "sojok-fromage",
+      "lahmbajine-manakish",
+      "feta-fromage"
+    ]
+  },
+  {
+    "id": "feta-fromage",
+    "name_en": "Feta Fromage",
+    "name_ar": "جبنة فيتا",
+    "category": "Manakish and Pies",
+    "meal_period": "breakfast",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [
+      "feta"
+    ],
+    "allergens": [
+      "dairy"
+    ],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "gluten-free",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 7.5,
+    "image_url": null,
+    "available": true,
+    "alternativeItemIds": [
+      "lahmbajine-manakish",
+      "cheese-manakish",
+      "kafta-manakish"
+    ]
+  },
+  {
+    "id": "sojok-fromage",
+    "name_en": "Sojok & Fromage",
+    "name_ar": "جبنة سجق",
+    "category": "Manakish and Pies",
+    "meal_period": "breakfast",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [],
+    "allergens": [
+      "dairy"
+    ],
+    "diet_tags": [
+      "halal",
+      "gluten-free",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 8.5,
+    "image_url": null,
+    "available": true,
+    "alternativeItemIds": [
+      "falafel-sandwich",
+      "lahmbajine-manakish",
+      "feta-fromage"
+    ]
+  },
+  {
+    "id": "shish-taouk-poulet",
+    "name_en": "Shish Taouk (Poulet)",
+    "name_ar": "شيش طاووق دجاج",
+    "category": "Manakish and Pies",
+    "meal_period": "breakfast",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [],
+    "allergens": [],
+    "diet_tags": [
+      "halal",
+      "gluten-free",
+      "no-dairy",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 11.99,
+    "image_url": null,
+    "available": true,
+    "alternativeItemIds": [
+      "sojuk-manakish",
+      "shawarma-boeuf",
+      "falafel-sandwich"
+    ]
+  },
+  {
+    "id": "shawarma-boeuf",
+    "name_en": "Shawarma (Boeuf)",
+    "name_ar": "شاورما لحم بقري",
+    "category": "Manakish and Pies",
+    "meal_period": "breakfast",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [],
+    "allergens": [
+      "sesame"
+    ],
+    "diet_tags": [
+      "halal",
+      "gluten-free",
+      "no-dairy",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 11.99,
+    "image_url": null,
+    "available": true,
+    "alternativeItemIds": [
+      "sojuk-manakish",
+      "shish-taouk-poulet",
+      "falafel-sandwich"
+    ]
+  },
+  {
+    "id": "shish-taouk-plate",
+    "name_en": "Shish Taouk Plate",
+    "name_ar": "شيش طاووق صحن",
+    "category": "Grills",
+    "meal_period": "lunch",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [],
+    "allergens": [],
+    "diet_tags": [
+      "halal",
+      "gluten-free",
+      "no-dairy",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 15.0,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13143/Screenshot_2024_02_19_at_5_21_45_PM_a9573c17a3.png",
+    "available": true,
+    "alternativeItemIds": [
+      "chicken-shawarma-trio",
+      "shawarma-beef-plate",
+      "beef-shawarma-trio"
+    ]
+  },
+  {
+    "id": "shawarma-beef-sandwich",
+    "name_en": "Shawarma Beef Sandwich",
+    "name_ar": "ساندويش شاورما لحم بقري",
+    "category": "Grills",
+    "meal_period": "lunch",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [
+      "beef"
+    ],
+    "allergens": [
+      "gluten",
+      "sesame"
+    ],
+    "diet_tags": [
+      "halal",
+      "no-dairy",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 8.75,
+    "image_url": null,
+    "available": true,
+    "alternativeItemIds": [
+      "shish-taouk-sandwich",
+      "combo-chicken-and-beef-shawarma-sandwich",
+      "falafel-plate"
+    ]
+  },
+  {
+    "id": "shish-taouk-sandwich",
+    "name_en": "Shish Taouk Sandwich",
+    "name_ar": "شيش طاووق ساندويش",
+    "category": "Grills",
+    "meal_period": "lunch",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_tags": [
+      "halal",
+      "no-dairy",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 8.75,
+    "image_url": null,
+    "available": true,
+    "alternativeItemIds": [
+      "shawarma-beef-sandwich",
+      "combo-chicken-and-beef-shawarma-sandwich",
+      "falafel-plate"
+    ]
+  },
+  {
+    "id": "chicken-shawarma-trio",
+    "name_en": "Chicken Shawarma Trio",
+    "name_ar": "شاورما دجاج ثلاثية",
+    "category": "Grills",
+    "meal_period": "lunch",
+    "description_en": "Served with a canned drink and a small potato.",
+    "description_ar": "",
+    "ingredients": [
+      "canned drink",
+      "chicken",
+      "small potato"
+    ],
+    "allergens": [
+      "gluten",
+      "sesame"
+    ],
+    "diet_tags": [
+      "halal",
+      "no-dairy",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 15.0,
+    "image_url": null,
+    "available": true,
+    "alternativeItemIds": [
+      "shish-taouk-plate",
+      "shawarma-beef-plate",
+      "beef-shawarma-trio"
+    ]
+  },
+  {
+    "id": "shawarma-beef-plate",
+    "name_en": "Shawarma Beef Plate",
+    "name_ar": "شاورما صحن لحم بقري",
+    "category": "Grills",
+    "meal_period": "lunch",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [
+      "beef"
+    ],
+    "allergens": [
+      "sesame"
+    ],
+    "diet_tags": [
+      "halal",
+      "gluten-free",
+      "no-dairy",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 15.0,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13143/Screenshot_2024_02_19_at_5_22_03_PM_45487837c1.png",
+    "available": true,
+    "alternativeItemIds": [
+      "shish-taouk-plate",
+      "chicken-shawarma-trio",
+      "beef-shawarma-trio"
+    ]
+  },
+  {
+    "id": "falafel-plate",
+    "name_en": "Falafel Plate",
+    "name_ar": "فلافل صحن",
+    "category": "Grills",
+    "meal_period": "lunch",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [],
+    "allergens": [
+      "sesame"
+    ],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "vegan",
+      "gluten-free",
+      "no-dairy",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 13.5,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13143/falafel_plate_e1137ab73c.jpeg",
+    "available": true,
+    "alternativeItemIds": [
+      "shish-taouk-plate",
+      "chicken-shawarma-trio",
+      "shawarma-beef-plate"
+    ]
+  },
+  {
+    "id": "beef-shawarma-trio",
+    "name_en": "Beef Shawarma Trio",
+    "name_ar": "شاورما لحم بقري ثلاثية",
+    "category": "Grills",
+    "meal_period": "lunch",
+    "description_en": "Served with a canned drink and a small potato.",
+    "description_ar": "",
+    "ingredients": [
+      "beef",
+      "canned drink",
+      "small potato"
+    ],
+    "allergens": [
+      "gluten",
+      "sesame"
+    ],
+    "diet_tags": [
+      "halal",
+      "no-dairy",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 15.0,
+    "image_url": null,
+    "available": true,
+    "alternativeItemIds": [
+      "shish-taouk-plate",
+      "chicken-shawarma-trio",
+      "shawarma-beef-plate"
+    ]
+  },
+  {
+    "id": "combo-shish-taouk-and-shawarma-beef-plate",
+    "name_en": "Combo Shish Taouk and Shawarma Beef Plate",
+    "name_ar": "شيش طاووق شاورما صحن كومبو لحم بقري و",
+    "category": "Grills",
+    "meal_period": "lunch",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [
+      "beef"
+    ],
+    "allergens": [
+      "sesame"
+    ],
+    "diet_tags": [
+      "halal",
+      "gluten-free",
+      "no-dairy",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 15.0,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13143/Screenshot_2024_02_19_at_5_27_45_PM_770d82f9a0.png",
+    "available": true,
+    "alternativeItemIds": [
+      "shish-taouk-plate",
+      "chicken-shawarma-trio",
+      "shawarma-beef-plate"
+    ]
+  },
+  {
+    "id": "2-chicken-shawarma-trio",
+    "name_en": "2 Chicken Shawarma Trio",
+    "name_ar": "شاورما دجاج ثلاثية",
+    "category": "Grills",
+    "meal_period": "lunch",
+    "description_en": "Served with a canned drink and a small potato.",
+    "description_ar": "",
+    "ingredients": [
+      "canned drink",
+      "chicken",
+      "small potato"
+    ],
+    "allergens": [
+      "gluten",
+      "sesame"
+    ],
+    "diet_tags": [
+      "halal",
+      "no-dairy",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 18.99,
+    "image_url": null,
+    "available": true,
+    "alternativeItemIds": [
+      "shish-taouk-plate",
+      "chicken-shawarma-trio",
+      "shawarma-beef-plate"
+    ]
+  },
+  {
+    "id": "combo-chicken-and-beef-shawarma-sandwich",
+    "name_en": "Combo Chicken and Beef Shawarma Sandwich",
+    "name_ar": "ساندويش شاورما دجاج كومبو لحم بقري و",
+    "category": "Grills",
+    "meal_period": "lunch",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [
+      "beef",
+      "chicken"
+    ],
+    "allergens": [
+      "gluten",
+      "sesame"
+    ],
+    "diet_tags": [
+      "halal",
+      "no-dairy",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 8.75,
+    "image_url": null,
+    "available": true,
+    "alternativeItemIds": [
+      "shawarma-beef-sandwich",
+      "shish-taouk-sandwich",
+      "falafel-plate"
+    ]
+  },
+  {
+    "id": "combo-chicken-and-beef-shawarma-sandwich-trio",
+    "name_en": "Combo Chicken and Beef Shawarma Sandwich Trio",
+    "name_ar": "ساندويش شاورما دجاج كومبو لحم بقري ثلاثية و",
+    "category": "Grills",
+    "meal_period": "lunch",
+    "description_en": "Served with a canned drink and a small potato.",
+    "description_ar": "",
+    "ingredients": [
+      "beef",
+      "canned drink",
+      "chicken",
+      "small potato"
+    ],
+    "allergens": [
+      "gluten",
+      "sesame"
+    ],
+    "diet_tags": [
+      "halal",
+      "no-dairy",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 15.0,
+    "image_url": null,
+    "available": true,
+    "alternativeItemIds": [
+      "shish-taouk-plate",
+      "chicken-shawarma-trio",
+      "shawarma-beef-plate"
+    ]
+  },
+  {
+    "id": "hummus",
+    "name_en": "Hummus",
+    "name_ar": "حمص",
+    "category": "Sides",
+    "meal_period": "all-day",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [],
+    "allergens": [
+      "sesame"
+    ],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "vegan",
+      "gluten-free",
+      "no-dairy",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 4.5,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13129/21eca6d2_c1d4_11ea_97a7_868985124296_hummus_2_1f792b30a3.jpeg",
+    "available": true,
+    "alternativeItemIds": [
+      "tabouleh",
+      "fatoush",
+      "basmati-rice"
+    ]
+  },
+  {
+    "id": "poutine",
+    "name_en": "Poutine",
+    "name_ar": "بوتين",
+    "category": "Sides",
+    "meal_period": "all-day",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [],
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 12.0,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13125/poutine_2520d2d6d1.png",
+    "available": true,
+    "alternativeItemIds": [
+      "poutine-au-poulet",
+      "steak",
+      "merguez"
+    ]
+  },
+  {
+    "id": "fries",
+    "name_en": "Fries",
+    "name_ar": "بطاطا مقلية",
+    "category": "Sides",
+    "meal_period": "all-day",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [],
+    "allergens": [],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "vegan",
+      "gluten-free",
+      "no-dairy",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 5.0,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13125/fries_dda49325ec.png",
+    "available": true,
+    "alternativeItemIds": [
+      "hummus",
+      "tabouleh",
+      "fatoush"
+    ]
+  },
+  {
+    "id": "cheesecake-slice",
+    "name_en": "Cheesecake Slice",
+    "name_ar": "تشيز كيك شريحة",
+    "category": "Sides",
+    "meal_period": "all-day",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [],
+    "allergens": [
+      "dairy",
+      "eggs",
+      "gluten"
+    ],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 6.0,
+    "image_url": null,
+    "available": true,
+    "alternativeItemIds": [
+      "hot-potato",
+      "fries",
+      "hummus"
+    ]
+  },
+  {
+    "id": "tabouleh",
+    "name_en": "Tabouleh",
+    "name_ar": "تبولة",
+    "category": "Sides",
+    "meal_period": "all-day",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "vegan",
+      "no-dairy",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 4.5,
+    "image_url": null,
+    "available": true,
+    "alternativeItemIds": [
+      "hummus",
+      "fatoush",
+      "basmati-rice"
+    ]
+  },
+  {
+    "id": "fatoush",
+    "name_en": "Fatoush",
+    "name_ar": "فتوش",
+    "category": "Sides",
+    "meal_period": "all-day",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "vegan",
+      "no-dairy",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 4.5,
+    "image_url": null,
+    "available": true,
+    "alternativeItemIds": [
+      "hummus",
+      "tabouleh",
+      "basmati-rice"
+    ]
+  },
+  {
+    "id": "hot-potato",
+    "name_en": "Hot Potato",
+    "name_ar": "بطاطا حارة",
+    "category": "Sides",
+    "meal_period": "all-day",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [
+      "potato"
+    ],
+    "allergens": [],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "vegan",
+      "gluten-free",
+      "no-dairy",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 6.0,
+    "image_url": null,
+    "available": true,
+    "alternativeItemIds": [
+      "cheesecake-slice",
+      "fries",
+      "hummus"
+    ]
+  },
+  {
+    "id": "basmati-rice",
+    "name_en": "Basmati Rice",
+    "name_ar": "أرز بسمتي",
+    "category": "Sides",
+    "meal_period": "all-day",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [
+      "rice"
+    ],
+    "allergens": [],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "vegan",
+      "gluten-free",
+      "no-dairy",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 4.5,
+    "image_url": null,
+    "available": true,
+    "alternativeItemIds": [
+      "hummus",
+      "tabouleh",
+      "fatoush"
+    ]
+  },
+  {
+    "id": "cabbage-salad",
+    "name_en": "Cabbage Salad",
+    "name_ar": "سلطة ملفوف",
+    "category": "Sides",
+    "meal_period": "all-day",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [],
+    "allergens": [],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "vegan",
+      "gluten-free",
+      "no-dairy",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 4.5,
+    "image_url": null,
+    "available": true,
+    "alternativeItemIds": [
+      "hummus",
+      "tabouleh",
+      "fatoush"
+    ]
+  },
+  {
+    "id": "baklava-patesserie",
+    "name_en": "Baklava Patesserie",
+    "name_ar": "حلويات بقلاوة",
+    "category": "Sides",
+    "meal_period": "all-day",
+    "description_en": "Pastry made of layers of filo filled with chopped nuts and honey.",
+    "description_ar": "",
+    "ingredients": [
+      "chopped nuts",
+      "filo",
+      "honey"
+    ],
+    "allergens": [
+      "dairy",
+      "gluten",
+      "nuts"
+    ],
+    "diet_tags": [
+      "halal",
+      "vegetarian"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 3.5,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13189/BAKLAVA_ac76df5512.jpeg",
+    "available": true,
+    "alternativeItemIds": [
+      "hummus",
+      "tabouleh",
+      "fatoush"
+    ]
+  },
+  {
+    "id": "salad-bar-100g",
+    "name_en": "Salad Bar 100g",
+    "name_ar": "بار السلطة",
+    "category": "Sides",
+    "meal_period": "all-day",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [],
+    "allergens": [],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "vegan",
+      "gluten-free",
+      "no-dairy",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 2.5,
+    "image_url": null,
+    "available": true,
+    "alternativeItemIds": [
+      "baklava-patesserie",
+      "hummus",
+      "tabouleh"
+    ]
+  },
+  {
+    "id": "poutine-au-poulet",
+    "name_en": "Poutine au Poulet",
+    "name_ar": "بوتين دجاج",
+    "category": "Sides",
+    "meal_period": "all-day",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [],
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "diet_tags": [
+      "halal",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 15.0,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13125/poutine_2520d2d6d1.png",
+    "available": true,
+    "alternativeItemIds": [
+      "steak",
+      "merguez",
+      "poutine"
+    ]
+  },
+  {
+    "id": "steak",
+    "name_en": "Steak",
+    "name_ar": "ستيك",
+    "category": "Sides",
+    "meal_period": "all-day",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [],
+    "allergens": [],
+    "diet_tags": [
+      "halal",
+      "gluten-free",
+      "no-dairy",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 15.0,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13125/poutine_2520d2d6d1.png",
+    "available": true,
+    "alternativeItemIds": [
+      "poutine-au-poulet",
+      "merguez",
+      "poutine"
+    ]
+  },
+  {
+    "id": "merguez",
+    "name_en": "Merguez",
+    "name_ar": "مرقاز",
+    "category": "Sides",
+    "meal_period": "all-day",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [],
+    "allergens": [],
+    "diet_tags": [
+      "halal",
+      "gluten-free",
+      "no-dairy",
+      "no-nuts"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 15.0,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13125/poutine_2520d2d6d1.png",
+    "available": true,
+    "alternativeItemIds": [
+      "poutine-au-poulet",
+      "steak",
+      "poutine"
+    ]
+  },
+  {
+    "id": "coke",
+    "name_en": "Coke",
+    "name_ar": "كوكا كولا",
+    "category": "Drinks",
+    "meal_period": "all-day",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [],
+    "allergens": [],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "vegan",
+      "gluten-free",
+      "no-dairy",
+      "no-nuts",
+      "drink"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 2.0,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13143/coke_ed428abe25.jpeg",
+    "available": true,
+    "alternativeItemIds": [
+      "diet-coke",
+      "pepsi",
+      "diet-pepsi"
+    ]
+  },
+  {
+    "id": "diet-coke",
+    "name_en": "Diet coke",
+    "name_ar": "كوكا كولا دايت",
+    "category": "Drinks",
+    "meal_period": "all-day",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [],
+    "allergens": [],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "vegan",
+      "gluten-free",
+      "no-dairy",
+      "no-nuts",
+      "drink"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 2.0,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13143/diet_coke_7f799bce99.jpeg",
+    "available": true,
+    "alternativeItemIds": [
+      "coke",
+      "pepsi",
+      "diet-pepsi"
+    ]
+  },
+  {
+    "id": "pepsi",
+    "name_en": "Pepsi",
+    "name_ar": "بيبسي",
+    "category": "Drinks",
+    "meal_period": "all-day",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [],
+    "allergens": [],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "vegan",
+      "gluten-free",
+      "no-dairy",
+      "no-nuts",
+      "drink"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 2.0,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13178/pepsi_1286_c790a9cc66.jpeg",
+    "available": true,
+    "alternativeItemIds": [
+      "coke",
+      "diet-coke",
+      "diet-pepsi"
+    ]
+  },
+  {
+    "id": "diet-pepsi",
+    "name_en": "Diet Pepsi",
+    "name_ar": "بيبسي دايت",
+    "category": "Drinks",
+    "meal_period": "all-day",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [],
+    "allergens": [],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "vegan",
+      "gluten-free",
+      "no-dairy",
+      "no-nuts",
+      "drink"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 2.0,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13181/pepsi_diet_c03b8be8c5.jpeg",
+    "available": true,
+    "alternativeItemIds": [
+      "coke",
+      "diet-coke",
+      "pepsi"
+    ]
+  },
+  {
+    "id": "redbull",
+    "name_en": "Redbull",
+    "name_ar": "ريد بُل",
+    "category": "Drinks",
+    "meal_period": "all-day",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [],
+    "allergens": [],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "vegan",
+      "gluten-free",
+      "no-dairy",
+      "no-nuts",
+      "drink"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 4.0,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13184/redbull_ad8490cbdf.jpeg",
+    "available": true,
+    "alternativeItemIds": [
+      "apple-juice",
+      "perrier",
+      "ayran"
+    ]
+  },
+  {
+    "id": "apple-juice",
+    "name_en": "Apple Juice",
+    "name_ar": "عصير تفاح",
+    "category": "Drinks",
+    "meal_period": "all-day",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [],
+    "allergens": [],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "vegan",
+      "gluten-free",
+      "no-dairy",
+      "no-nuts",
+      "drink"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 4.5,
+    "image_url": null,
+    "available": true,
+    "alternativeItemIds": [
+      "redbull",
+      "ayran",
+      "perrier"
+    ]
+  },
+  {
+    "id": "perrier",
+    "name_en": "Perrier",
+    "name_ar": "بيريه",
+    "category": "Drinks",
+    "meal_period": "all-day",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [],
+    "allergens": [],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "vegan",
+      "gluten-free",
+      "no-dairy",
+      "no-nuts",
+      "drink"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 3.0,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13160/6_19b4873799.jpg",
+    "available": true,
+    "alternativeItemIds": [
+      "coke",
+      "diet-coke",
+      "pepsi"
+    ]
+  },
+  {
+    "id": "water",
+    "name_en": "Water",
+    "name_ar": "مياه",
+    "category": "Drinks",
+    "meal_period": "all-day",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [],
+    "allergens": [],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "vegan",
+      "gluten-free",
+      "no-dairy",
+      "no-nuts",
+      "drink"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 2.0,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13140/naya_water_72fcedde49.jpg",
+    "available": true,
+    "alternativeItemIds": [
+      "coke",
+      "diet-coke",
+      "pepsi"
+    ]
+  },
+  {
+    "id": "fanta",
+    "name_en": "Fanta",
+    "name_ar": "فانتا",
+    "category": "Drinks",
+    "meal_period": "all-day",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [],
+    "allergens": [],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "vegan",
+      "gluten-free",
+      "no-dairy",
+      "no-nuts",
+      "drink"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 2.0,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13143/Fanta_d7460afddc.jpg",
+    "available": true,
+    "alternativeItemIds": [
+      "coke",
+      "diet-coke",
+      "pepsi"
+    ]
+  },
+  {
+    "id": "sprite",
+    "name_en": "Sprite",
+    "name_ar": "سبرايت",
+    "category": "Drinks",
+    "meal_period": "all-day",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [],
+    "allergens": [],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "vegan",
+      "gluten-free",
+      "no-dairy",
+      "no-nuts",
+      "drink"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 2.0,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13170/sprite_865_2eae62a4ba.jpeg",
+    "available": true,
+    "alternativeItemIds": [
+      "coke",
+      "diet-coke",
+      "pepsi"
+    ]
+  },
+  {
+    "id": "7-up",
+    "name_en": "7 up",
+    "name_ar": "7 up",
+    "category": "Drinks",
+    "meal_period": "all-day",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [],
+    "allergens": [],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "vegan",
+      "gluten-free",
+      "no-dairy",
+      "no-nuts",
+      "drink"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 2.0,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13181/7up_03dceb42cb.jpeg",
+    "available": true,
+    "alternativeItemIds": [
+      "coke",
+      "diet-coke",
+      "pepsi"
+    ]
+  },
+  {
+    "id": "ayran",
+    "name_en": "Ayran",
+    "name_ar": "عيران",
+    "category": "Drinks",
+    "meal_period": "all-day",
+    "description_en": "",
+    "description_ar": "",
+    "ingredients": [],
+    "allergens": [
+      "dairy"
+    ],
+    "diet_tags": [
+      "halal",
+      "vegetarian",
+      "gluten-free",
+      "no-nuts",
+      "drink"
+    ],
+    "variants": [],
+    "modifications": {},
+    "price": 5.5,
+    "image_url": "https://betterresto.s3.us-west-1.wasabisys.com/production/13160/5_d08a36dd8b.jpg",
+    "available": true,
+    "alternativeItemIds": [
+      "apple-juice",
+      "redbull",
+      "perrier"
+    ]
+  }
+]

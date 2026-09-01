@@ -28,14 +28,18 @@ npx expo start
 ```
 
 Then:
-- **Phone** — open the **Expo Go** app and scan the QR code printed in the terminal
+- **Phone** — a custom **dev build** (see the Expo Go warning below); the store Expo Go app can no longer load this project
 - **iOS Simulator** — press `i`
 - **Android Emulator** — press `a`
 - **Browser** — press `w` (used for quick verification)
 
+⚠️ **Expo Go can no longer run this app.** `@stripe/stripe-react-native` is a native module, so
+checkout needs a custom dev build (`expo-dev-client` is installed). Use `npx expo run:android` or
+an EAS dev-client build; scanning the QR with the store Expo Go app will fail on the Stripe
+native module.
+
 ⚠️ Keep `expo` pinned to `~54.0.0` in `package.json`. `npx expo install` / `expo upgrade` will
-happily jump to whatever the newest SDK is (57 as of writing), which breaks Expo Go on-device
-until the store app catches up — see the SDK-54 note below.
+happily jump to whatever the newest SDK is (57 as of writing) — see the SDK-54 note below.
 
 ## Layout
 
@@ -50,11 +54,12 @@ app/                        ← expo-router routes
 src/
 ├── theme/theme.ts          ← colors, radii, Barlow font families (mirrors SwiftUI AppTheme)
 ├── types/                  ← shared TS types
-├── data/                   ← static catalogs: partner, restaurants, Al Taib menu (76 items)
+├── data/                   ← static catalogs: partner, restaurants, Al Taib menu (73 items)
 ├── lib/                    ← supabase (accounts client) + dispatch (order bridge) + storage
 │                              (AsyncStorage: orders/addresses always, demo-mode accounts) + hash (demo-mode KDF)
 ├── store/                  ← zustand: auth, cart, orders, address
-└── components/             ← RemoteImage, DisplayText, GradientButton
+├── goer/                   ← chatbot client: transport, chat store, offline NLU, tool executors
+└── components/             ← RemoteImage, DisplayText, GradientButton (+ goer/ chat UI)
 ```
 
 ## Architecture notes
@@ -78,15 +83,25 @@ src/
   unique email, so `ordersStore`/`addressStore` didn't need to change when accounts went real.
 - **Money** — order records store amounts in **cents** (`ordersStore`) so totals can't drift from
   float rounding, matching the SwiftUI `OrderRecord`.
-- **Payments** — `cart.tsx` runs a simulated authorize→capture (a `setTimeout` + generated
-  `pi_sim_…` id). Wire a real Stripe PaymentSheet + backend here for production.
+- **Payments — real Stripe, server-priced** — `src/lib/payments.ts` opens Stripe's PaymentSheet;
+  `placeOrder()` charges *before* it records anything. The app never sends an amount: it posts
+  item ids + quantities to `POST /payments/intent`, and `backend/app/pricing.py` reprices the cart
+  from the backend's own menu copy and charges that. `POST /orders` then re-reads the PaymentIntent
+  from Stripe and refuses (402) unless it succeeded and its metadata `order_id` matches — so an
+  order cannot exist without a matching charge, and one charge cannot be replayed into many orders.
+  The order id is generated before payment and doubles as the Stripe idempotency key and the row's
+  primary key, which is what makes the post-charge dispatch retry safe. **Demo mode** (no
+  `EXPO_PUBLIC_API_URL`) still simulates, with a `pi_demo_…` id — no backend, so no real money.
 - **Order dispatch bridge** — after the local `record(...)` at checkout, the shared pipeline
   (`src/lib/placeOrder.ts`) calls `publishOrderToDispatch()` (`src/lib/dispatch.ts`), which POSTs
   the order to the **Python/FastAPI backend** (`backend/`, `POST /orders`). The backend re-validates
   the delivery location, computes the item summary, inserts the shared Supabase `orders` row
   (anon key, never chaining RETURNING — see the RLS gotcha in backend/app/routers/orders.py), and
-  alerts drivers via push. Best-effort: it never blocks or fails checkout, and is a no-op unless
-  `EXPO_PUBLIC_API_URL` is set in `.env.local`. The inserted row is insert-only from this side;
+  alerts drivers via push. **No longer best-effort** — since the card is charged first, a paid order
+  that never reaches a driver is the worst outcome, so this is awaited and retried (0/0.8/2.5s) and
+  a total failure surfaces to the user as a `warning` on an otherwise successful result. Retrying is
+  safe because the order id is client-generated: a repeat insert collides on the primary key and the
+  backend reports it as a duplicate success. Still a no-op unless `EXPO_PUBLIC_API_URL` is set. The inserted row is insert-only from this side;
   each driver's delivery progress lives in a driver-side `driver_orders` overlay table.
 - **Delivery-location gate** — checkout is impossible without a *verified* delivery location.
   `src/lib/deliveryLocation.ts` defines the rule (non-trivial street line + real geocoded
@@ -101,44 +116,69 @@ src/
 
 **Goer** is the in-app AI assistant (floating button, bottom-right of Home and Cart) that can do
 everything the UI can: browse the Al Taib menu, recommend, build the cart, set the tip, and run
-checkout — all from chat. Code lives in `src/goer/` (logic) + `src/components/goer/` (UI).
+checkout — all from chat.
 
-- **Two brains, one toolset** — `send.ts` routes each user turn either to the **LLM loop**
-  (`agentLoop.ts` → `streamClient.ts` → the `goer-chat` edge function → Anthropic, streamed SSE) or
-  to the **offline rule-based NLU** (`localNLU.ts`: intent detection + fuzzy matching in
-  `menuIndex.ts`). Both drive the *same* client-side tool executors (`tools/executors.ts`), so
-  behavior is identical and the app demos fully offline. Transport failures downgrade to the NLU
+**The agents run on the backend** (`backend/app/goer/`), ported from the SufraAI restaurant
+chatbot. The app holds transport, chat state, the offline assistant, and the tool executors
+(`src/goer/`) plus the UI (`src/components/goer/`). This is a change from the original design,
+where the agent loop ran in the app bundle and the backend was a thin Anthropic proxy.
+
+- **One turn, server-side** — `POST /goer/chat/stream` runs
+  `guard_agent` (on-topic gate, fails open) → `route` (deterministic shortcuts for the hot paths,
+  then an LLM classifier) → one of six specialists → a streamed reply. `router_agent.py` is the
+  orchestrator; SufraAI leaves that file an unfinished stub, which is why its own `/chat` can't run.
+- **Six specialists with visible handoffs** — Menu Concierge, Cart Manager, Checkout, Order
+  Tracker, Dietary Advisor, Recommendations. The stream's first frame names who took the turn, and
+  the app renders a divider when it changes. Each rebuilds its system prompt every call from the
+  live cart/tip/address state the request carries.
+- **Plan, then speak** — each specialist first extracts structured intent with a JSON-only model
+  call, resolves it against the menu, and only then writes prose with the outcome already in the
+  prompt (SufraAI's order-agent pattern). So the sentence can't describe something that didn't
+  happen, and the reply can stream while the actions are already settled.
+- **Two brains, one toolset** — `send.ts` routes a turn either to the backend
+  (`agentLoop.ts` → `streamClient.ts`) or to the **offline rule-based NLU** (`localNLU.ts`: intent
+  detection + fuzzy matching in `menuIndex.ts`). Both drive the *same* client-side tool executors
+  (`tools/executors.ts`), so the app demos fully offline. Transport failures downgrade to the NLU
   mid-conversation (sticky per session, re-probes on next launch).
-- **Four specialists with visible handoffs** — Menu Concierge / Cart Manager / Checkout / Order
-  Tracker (`agents.ts`). Each has its own system prompt + restricted toolset (`tools/schemas.ts`)
-  over one shared history; a `handoff_to_agent` tool swaps the active agent and renders a divider
-  in the transcript. System prompts are rebuilt every call with live cart/tip/address state; the
-  full menu is compacted into the Concierge prompt (`compactMenuForPrompt`).
-- **Checkout safety invariant** — `stage_order_confirmation` only *stages* a snapshot
-  (`goerStore.stageOrder`) and renders `OrderConfirmationCard`; the ONLY code path that places an
-  order from chat is the card's Confirm button → `confirmStagedOrder()` → `src/lib/placeOrder.ts`
-  (the same pipeline `cart.tsx` uses). Duplicate taps no-op via the staged→placing status guard,
-  and a cart-hash check marks the card stale if the cart changed after staging.
-- **State & persistence** — `goerStore.ts` (zustand): transcript (`GoerMessage` discriminated
-  union: text, menu cards, cart summary, order confirmation, order status, quick replies, handoff,
-  system note), API history (trimmed to 24 messages, tool_results never orphaned), staged order,
-  chat tip/address. Persisted per user at `localgo.goer.<email>` like the other stores.
-- **LLM proxy** — `backend/app/routers/goer.py` (`POST /goer/chat` on the FastAPI backend): thin
-  SSE pass-through to Anthropic that holds `ANTHROPIC_API_KEY` (never in the client bundle), clamps
-  model/max_tokens/history, and rate-limits per JWT sub. Default model `claude-haiku-4-5`
-  (override with `GOER_MODEL` in `backend/.env`). It replaced the old Deno edge function
-  (`supabase/functions/goer-chat/` — kept only as reference, no longer called). Without a running
-  backend the app simply stays in offline-NLU mode; `EXPO_PUBLIC_GOER_FORCE_FALLBACK=1` forces it
-  for testing.
+- **Actions, not tool-use blocks** — the cart is on-device zustand state, so a turn comes back with
+  `actions` (`{tool, input}`) naming executors in `tools/executors.ts`; the app applies them after
+  the text. That's the one place this departs from SufraAI, whose agents write the user's order
+  straight to SQLite.
+- **Checkout safety invariant** — no action can place an order. The strongest thing the Checkout
+  agent can emit is `stage_order_confirmation`, which stages a snapshot (`goerStore.stageOrder`)
+  and renders `OrderConfirmationCard`; the ONLY code path that places an order from chat is the
+  card's Confirm button → `confirmStagedOrder()` → `src/lib/placeOrder.ts` (the same pipeline
+  `cart.tsx` uses). Duplicate taps no-op via the staged→placing status guard, and a cart-hash check
+  marks the card stale if the cart changed after staging.
+- **Retrieval** — `app/goer/rag.py`: two persistent ChromaDB collections (menu items, FAQs)
+  embedded with sentence-transformers' `all-MiniLM-L6-v2`, as SufraAI does. That package needs
+  torch, which has no win-arm64 wheels, so it falls back to Chroma's bundled ONNX embedder
+  (downloaded once, ~80 MB, cached under `~/.cache/chroma`). `build_index()` runs at startup and
+  upserts, so a menu edit only needs a restart.
+- **Recommendations** — `app/goer/recommender.py` reads Apriori association rules and popularity
+  rankings mined from an Al Taib order history (`scripts/train_recommender.py`, the script form of
+  SufraAI's training notebook). No model call: the Recommendations agent picks with the rules and
+  the LLM only writes the pitch. Also exposed model-free at `GET /goer/recommendations`.
+- **Data** — `app/goer/data/menu.json` is generated from `src/data/menu.ts` by
+  `scripts/build_menu_dataset.py`, which derives the allergens, diet tags, and Arabic names the
+  agents need. **`src/data/menu.ts` stays the single source of truth for ids, names, and prices —
+  re-run the script after editing it.**
+- **Model** — Groq, `llama-3.1-8b-instant` by default (`GOER_MODEL` in `backend/.env`). Fast enough
+  to run the guard, the router, and a specialist back to back within one turn. `GROQ_API_KEY` lives
+  only in the backend env, never in the client bundle. Without a running backend the app stays in
+  offline-NLU mode; `EXPO_PUBLIC_GOER_FORCE_FALLBACK=1` forces it for testing.
 - **Streaming on RN** — uses `expo/fetch` (WinterCG, SDK 52+) because RN's built-in fetch can't
   expose `response.body`; the SSE parser is hand-rolled in `streamClient.ts`. No new dependencies.
+- **Dead reference** — `supabase/functions/goer-chat/` (the original Deno edge function) is no
+  longer called by anything and predates two rewrites. Delete it when convenient.
 
 ## Backend status (Python/FastAPI, as of 2026-07-16)
 
 **The backend code is Python/FastAPI** (`backend/` in this repo — one service backs this app AND
 `../LocalGODriverRN`). It replaced the TypeScript/Deno edge functions and the apps' direct
 PostgREST data access: order dispatch (`POST /orders`, with server-side delivery-location
-validation), the driver feed/claim/status endpoints, the Goer LLM proxy (`POST /goer/chat`), and
+validation), the driver feed/claim/status endpoints, the Goer chatbot in full
+(`POST /goer/chat[/stream]` plus its menu/FAQ/recommendation endpoints), and
 push notifications (`POST /notify`). Run it with `uvicorn app.main:app --port 8000` from
 `backend/` (Python **3.12** venv — 3.14 on this machine breaks httpx/asyncio with
 `No module named 'concurrent.futures.thread'`); see `backend/README.md`. Apps find it via
@@ -176,12 +216,14 @@ machine (npm permissions) — install it **locally** instead: `npm install @expo
 
 ## Data
 
-Only **Al Taib** (`al-taib`) has a real menu (`hasMenu: true`); its 76 items live in
-`src/data/menu.ts` with remote product photos. Other partners would render a "coming soon" state.
+Only **Al Taib** (`al-taib`) has a real menu (`hasMenu: true`); its 73 items live in
+`src/data/menu.ts` with remote product photos. `backend/app/goer/data/menu.json` is generated from
+that file (see Goer above) — never edit it by hand. Other partners would render a "coming soon" state.
 
 ## Known gaps vs. the SwiftUI app (intentional, for a real backend later)
 
-- Apple / Google sign-in buttons are visual only (no OAuth wired).
+- No social sign-in. The non-functional Apple/Google buttons were removed from `login.tsx` before
+  Play review — a control that does nothing is a rejection risk. Email/password is the only path.
 - Demo-mode-only password hashing uses iterated SHA-256 (expo-crypto has no PBKDF2) — irrelevant
   when Supabase is configured (the normal case), since Supabase Auth owns password storage then.
 - Address entry has autocomplete + GPS via Photon geocoding (`src/lib/geocoding.ts`) but no map

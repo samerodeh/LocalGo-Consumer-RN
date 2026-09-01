@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
@@ -8,6 +8,7 @@ import { useTheme, type ThemePalette } from '../../src/theme/ThemeContext';
 import { DisplayText } from '../../src/components/DisplayText';
 import { ConfirmModal } from '../../src/components/ConfirmModal';
 import { useAuthStore } from '../../src/store/authStore';
+import { deleteAccount } from '../../src/lib/account';
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -16,6 +17,26 @@ export default function SettingsScreen() {
   const user = useAuthStore((s) => s.currentUser);
   const logout = useAuthStore((s) => s.logout);
   const [signOutVisible, setSignOutVisible] = useState(false);
+  const [deleteVisible, setDeleteVisible] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  // Required by Google Play for any app offering sign-up. Orders survive as
+  // anonymized records; everything identifying the customer is removed. See
+  // src/lib/account.ts.
+  const confirmDelete = async () => {
+    setDeleteVisible(false);
+    setDeleting(true);
+    const result = await deleteAccount(user?.email ?? null);
+    setDeleting(false);
+
+    if (!result.ok) {
+      Alert.alert('Could not delete account', result.error);
+      return;
+    }
+    // Signing out last: the auth gate swaps to the login screen, unmounting
+    // this component, so nothing after this runs.
+    await logout();
+  };
 
   const fullName = user ? `${user.firstName} ${user.lastName}` : 'Guest';
   const initials = user
@@ -91,6 +112,18 @@ export default function SettingsScreen() {
         <Pressable style={styles.signOut} onPress={() => setSignOutVisible(true)}>
           <Text style={styles.signOutText}>Sign Out</Text>
         </Pressable>
+
+        <Pressable
+          style={styles.deleteAccount}
+          onPress={() => setDeleteVisible(true)}
+          disabled={deleting}
+        >
+          {deleting ? (
+            <ActivityIndicator size="small" color={colors.danger} />
+          ) : (
+            <Text style={styles.deleteAccountText}>Delete Account</Text>
+          )}
+        </Pressable>
       </ScrollView>
 
       <ConfirmModal
@@ -104,6 +137,20 @@ export default function SettingsScreen() {
           setSignOutVisible(false);
           void logout();
         }}
+      />
+
+      <ConfirmModal
+        visible={deleteVisible}
+        title="Delete your account?"
+        message={
+          'This permanently deletes your account, saved addresses, and payment cards. ' +
+          'Past orders are kept as business records but no longer linked to you. ' +
+          "This can't be undone."
+        }
+        confirmLabel="Delete Account"
+        destructive
+        onCancel={() => setDeleteVisible(false)}
+        onConfirm={() => void confirmDelete()}
       />
     </SafeAreaView>
   );
@@ -198,4 +245,11 @@ const makeStyles = (colors: ThemePalette) =>
       alignItems: 'center',
     },
     signOutText: { color: colors.danger, fontSize: 15, fontWeight: '600' },
+    deleteAccount: { paddingVertical: 18, alignItems: 'center', minHeight: 56, justifyContent: 'center' },
+    deleteAccountText: {
+      color: colors.danger,
+      fontSize: 14,
+      fontWeight: '600',
+      textDecorationLine: 'underline',
+    },
   });

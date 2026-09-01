@@ -11,6 +11,7 @@ import {
   resolveMenuItem,
 } from '../menuIndex';
 import { goerMsg, resolveTip, useGoerStore } from '../goerStore';
+import { isGoerAgentId } from '../types';
 import type { CartSummarySnapshot, GoerAgentId, ToolExecution } from '../types';
 
 const money = (n: number) => `$${n.toFixed(2)}`;
@@ -384,9 +385,11 @@ const executors: Record<string, (input: ToolInput) => Promise<ToolExecution> | T
 
   // MARK: Shared
 
+  // Kept for the local NLU and any direct caller; the backend router swaps the
+  // active agent itself and reports it in the stream's `agent` frame instead.
   handoff_to_agent: (input) => {
     const target = input.agent as GoerAgentId;
-    if (!['concierge', 'cart', 'checkout', 'tracker'].includes(target)) {
+    if (!isGoerAgentId(target)) {
       return { resultText: `Unknown agent "${String(input.agent)}".`, isError: true };
     }
     if (useGoerStore.getState().activeAgent === target) {

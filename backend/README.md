@@ -5,6 +5,11 @@ It replaces the old TypeScript/Deno Supabase edge functions (`goer-chat`,
 `notify-push`) and the apps' direct Supabase data access. Supabase remains the
 underlying Postgres + Auth provider; this service is the only backend *code*.
 
+It also hosts **Goer** in full — the consumer app's multi-agent ordering
+chatbot. Guard agent, router, six specialists, ChromaDB retrieval over the menu
+and FAQ, and the Apriori recommender all live in `app/goer/`; the phone only
+executes the cart tool calls a turn comes back with. See "Goer" below.
+
 ## Endpoints
 
 | Method | Path                   | Caller   | What it does |
@@ -14,7 +19,12 @@ underlying Postgres + Auth provider; this service is the only backend *code*.
 | GET    | `/orders/feed`         | driver   | Unclaimed + own orders merged with the driver's `driver_orders` overlay (camelCase, ready for the app) |
 | POST   | `/orders/{id}/accept`  | driver   | Atomic claim; `409` when another driver won the race; notifies the customer |
 | POST   | `/orders/{id}/status`  | driver   | Upserts the driver's private overlay status (declined / picked_up / delivered) |
-| POST   | `/goer/chat`           | consumer | SSE pass-through to the Anthropic Messages API (Goer's LLM brain) |
+| POST   | `/goer/chat`           | consumer | One Goer turn: guard -> router -> specialist. JSON in, JSON out |
+| POST   | `/goer/chat/stream`    | consumer | The same turn as SSE — reply tokens, then the tool calls to run |
+| GET    | `/goer/menu`           | consumer | The enriched menu (allergens, diet tags, alternatives) agents reason over |
+| GET    | `/goer/faq`            | consumer | The FAQ knowledge base |
+| GET    | `/goer/recommendations`| consumer | Apriori/popularity picks for a cart — deterministic, no model call |
+| GET    | `/goer/health`         | anyone   | Goer's model, embedder, and index sizes |
 | POST   | `/notify`              | both     | Push dispatch; recipients derived server-side from the order row |
 
 Driver endpoints require the driver's Supabase Auth access token as
@@ -40,10 +50,11 @@ EXPO_PUBLIC_API_URL=http://192.168.x.x:8000
 
 ## Environment
 
-See `.env.example`. Everything degrades gracefully: no `ANTHROPIC_API_KEY`
-means Goer stays in offline-NLU mode, no `SUPABASE_SERVICE_ROLE_KEY` means
-push notifications are skipped, no Supabase values means order endpoints
-return 503 (the apps then behave exactly like demo mode).
+See `.env.example`. Everything degrades gracefully: no `GROQ_API_KEY` means
+the chat endpoints return 503 and the app falls back to its on-device
+assistant, no `SUPABASE_SERVICE_ROLE_KEY` means push notifications are skipped,
+no Supabase values means order endpoints return 503 (the apps then behave
+exactly like demo mode).
 
 `app/config.py` calls `load_dotenv()` on `backend/.env`, which is a no-op when
 the file is absent — so in a deployed environment the same values are read
@@ -105,8 +116,10 @@ Set the env vars in the Railway dashboard (Variables tab) — the same keys as
 |----------|-----------|
 | `SUPABASE_URL` / `SUPABASE_ANON_KEY` | order endpoints (503 without) |
 | `SUPABASE_SERVICE_ROLE_KEY` | push + customer-facing status mirroring |
-| `ANTHROPIC_API_KEY` | Goer's LLM mode (offline NLU without) |
-| `GOER_MODEL` | optional override, defaults to `claude-haiku-4-5` |
+| `GROQ_API_KEY` | Goer's agents (the app falls back to offline NLU without) |
+| `GOER_MODEL` | optional override, defaults to `llama-3.1-8b-instant` |
+| `GOER_TEMPERATURE` / `GOER_MAX_TOKENS` / `GOER_MAX_HISTORY` | optional Goer tuning |
+| `CHROMA_PATH` | optional; where the retrieval index persists |
 
 Verify, then wire the apps to the deployed URL:
 
@@ -121,8 +134,46 @@ Put that URL in `EXPO_PUBLIC_API_URL` in **both** apps' `.env.local` *and* in
 `undefined`, and `dispatch.ts` silently no-ops. That is exactly how orders went
 missing from builds while working fine on localhost.
 
-⚠️ **Before exposing this publicly**, note that `POST /orders` and
-`POST /goer/chat` take no auth — fine on a laptop, but on a public URL anyone
-who finds it can inject orders into the driver feed or spend your Anthropic
-credits (`/goer/chat` is rate-limited to 20/min per IP, which a rotating
-caller defeats). See the security note in the root `CLAUDE.md`.
+⚠️ **Before exposing this publicly**, note that `POST /orders` and the
+`/goer/chat*` endpoints take no auth — fine on a laptop, but on a public URL
+anyone who finds it can inject orders into the driver feed or spend your Groq
+quota (chat is rate-limited to 20/min per caller key, which a rotating caller
+defeats). See the security note in the root `CLAUDE.md`.
+
+## Goer
+
+The chatbot's whole pipeline is server-side, ported from the SufraAI restaurant
+chatbot:
+
+```
+POST /goer/chat[/stream]
+  -> guard_agent      on-topic gate (JSON verdict, fails open)
+  -> route            deterministic shortcuts, then an LLM classifier
+  -> one specialist   concierge | cart | checkout | tracker | dietary | recommendation
+  -> reply            streamed tokens, with the turn's outcome already in the prompt
+```
+
+Each specialist extracts structured intent first (a JSON-only call), resolves it
+against the menu, and only then writes prose — so the sentence the customer
+reads is written knowing what actually happened. The cart lives on the phone, so
+the resolved operations travel back as `actions`: calls to the executors in
+`src/goer/tools/executors.ts`.
+
+**Checkout invariant:** no action can place an order. The strongest thing
+Checkout can emit is `stage_order_confirmation`, which renders a card; only the
+user tapping Confirm runs `placeOrder`.
+
+### Data and training
+
+`app/goer/data/` holds the agents' knowledge base. Regenerate after a menu edit:
+
+```bash
+python scripts/build_menu_dataset.py         # src/data/menu.ts -> data/menu.json
+python scripts/build_transactions_dataset.py # synthetic Al Taib order history
+python scripts/train_recommender.py          # -> data/trained/*.json (Apriori + popularity)
+```
+
+`build_menu_dataset.py` reads the app's `src/data/menu.ts` so item ids, names,
+and prices have exactly one source of truth; it derives the allergens, diet
+tags, and Arabic names the agents need. The retrieval index rebuilds itself on
+every startup (upsert), so a menu change only needs a restart.

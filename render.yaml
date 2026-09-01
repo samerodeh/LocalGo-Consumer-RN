@@ -31,7 +31,24 @@ services:
         sync: false
       - key: SUPABASE_SERVICE_ROLE_KEY
         sync: false
-      - key: ANTHROPIC_API_KEY
+      - key: GROQ_API_KEY
+        sync: false
+      # Stripe. Without BOTH of the first two, config.STRIPE_CONFIGURED is
+      # false and checkout silently runs in demo mode — the app completes an
+      # order and no money moves. Use sk_test_/pk_test_ until you are ready to
+      # take real payments.
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_PUBLISHABLE_KEY
+        sync: false
+      # Only needed for POST /payments/webhook (orphaned-charge detection).
+      # Without it that endpoint returns 503; the rest of checkout is unaffected.
+      - key: STRIPE_WEBHOOK_SECRET
         sync: false
       - key: GOER_MODEL
-        value: claude-haiku-4-5
+        value: llama-3.1-8b-instant
+      # No CHROMA_PATH: the default (app/goer/chroma_db) is fine on ephemeral
+      # storage, since startup re-embeds the menu and FAQ every boot. Budget
+      # ~30-60s for the first boot after a deploy — Chroma also downloads its
+      # ONNX embedder (~80 MB) then. Set CHROMA_PATH to a mounted disk on a
+      # paid instance if you'd rather persist the index across deploys.

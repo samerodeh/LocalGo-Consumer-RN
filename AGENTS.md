@@ -17,8 +17,11 @@
 
 ## Goer assistant
 
-- Goer logic is in `src/goer/` and its UI is in `src/components/goer/`. The online LLM path and offline NLU path must use the same client-side tool executors.
-- Chat checkout must remain confirmation-gated: stage an order first, then place it only through the explicit confirmation flow. Do not bypass the stale-cart or duplicate-placement guards.
+- Goer's **agents run server-side** in `backend/app/goer/` (guard → router → six specialists, ChromaDB retrieval, Groq). Prompts, routing, and menu knowledge belong there — not in the app bundle.
+- The app side is `src/goer/` (transport, state, offline NLU) and `src/components/goer/` (UI). The online path and the offline NLU path must use the same client-side tool executors in `src/goer/tools/executors.ts`.
+- A backend turn returns `actions` naming those executors. Adding a capability means adding the executor here **and** teaching a specialist to emit it; never let the two drift.
+- Chat checkout must remain confirmation-gated: stage an order first, then place it only through the explicit confirmation flow. No server action may place an order. Do not bypass the stale-cart or duplicate-placement guards.
+- After editing `src/data/menu.ts`, re-run `backend/scripts/build_menu_dataset.py` so the agents' menu matches the app's.
 
 ## Verification
 

@@ -1,0 +1,247 @@
+[
+  {
+    "itemId": "coke",
+    "category": "Drinks",
+    "count": 147
+  },
+  {
+    "itemId": "fries",
+    "category": "Sides",
+    "count": 81
+  },
+  {
+    "itemId": "hummus",
+    "category": "Sides",
+    "count": 63
+  },
+  {
+    "itemId": "ayran",
+    "category": "Drinks",
+    "count": 55
+  },
+  {
+    "itemId": "pepsi",
+    "category": "Drinks",
+    "count": 46
+  },
+  {
+    "itemId": "baklava-patesserie",
+    "category": "Sides",
+    "count": 44
+  },
+  {
+    "itemId": "zaatar-manakish",
+    "category": "Manakish and Pies",
+    "count": 42
+  },
+  {
+    "itemId": "pepperoni-pizza-slice",
+    "category": "Pizza Slices",
+    "count": 36
+  },
+  {
+    "itemId": "tabouleh",
+    "category": "Sides",
+    "count": 33
+  },
+  {
+    "itemId": "shish-taouk-plate",
+    "category": "Grills",
+    "count": 31
+  },
+  {
+    "itemId": "cheese-pizza-slice",
+    "category": "Pizza Slices",
+    "count": 25
+  },
+  {
+    "itemId": "all-dressed-pizza-slice",
+    "category": "Pizza Slices",
+    "count": 23
+  },
+  {
+    "itemId": "fatoush",
+    "category": "Sides",
+    "count": 22
+  },
+  {
+    "itemId": "poutine",
+    "category": "Sides",
+    "count": 19
+  },
+  {
+    "itemId": "shawarma-beef-plate",
+    "category": "Grills",
+    "count": 18
+  },
+  {
+    "itemId": "water",
+    "category": "Drinks",
+    "count": 16
+  },
+  {
+    "itemId": "basmati-rice",
+    "category": "Sides",
+    "count": 14
+  },
+  {
+    "itemId": "apple-juice",
+    "category": "Drinks",
+    "count": 13
+  },
+  {
+    "itemId": "cheese-manakish",
+    "category": "Manakish and Pies",
+    "count": 13
+  },
+  {
+    "itemId": "cheesecake-slice",
+    "category": "Sides",
+    "count": 13
+  },
+  {
+    "itemId": "hot-potato",
+    "category": "Sides",
+    "count": 13
+  },
+  {
+    "itemId": "pepperoni-pizza",
+    "category": "Pizza",
+    "count": 13
+  },
+  {
+    "itemId": "shish-taouk-sandwich",
+    "category": "Grills",
+    "count": 13
+  },
+  {
+    "itemId": "cabbage-salad",
+    "category": "Sides",
+    "count": 12
+  },
+  {
+    "itemId": "sprite",
+    "category": "Drinks",
+    "count": 12
+  },
+  {
+    "itemId": "falafel-plate",
+    "category": "Grills",
+    "count": 11
+  },
+  {
+    "itemId": "all-dressed-pizza",
+    "category": "Pizza",
+    "count": 10
+  },
+  {
+    "itemId": "cheese-pizza",
+    "category": "Pizza",
+    "count": 10
+  },
+  {
+    "itemId": "lahmbajine-manakish",
+    "category": "Manakish and Pies",
+    "count": 10
+  },
+  {
+    "itemId": "spinach-pie",
+    "category": "Manakish and Pies",
+    "count": 10
+  },
+  {
+    "itemId": "veggie-pizza",
+    "category": "Pizza",
+    "count": 10
+  },
+  {
+    "itemId": "zaatar-and-chesse-manakish",
+    "category": "Manakish and Pies",
+    "count": 10
+  },
+  {
+    "itemId": "7-up",
+    "category": "Drinks",
+    "count": 9
+  },
+  {
+    "itemId": "shawarma-beef-sandwich",
+    "category": "Grills",
+    "count": 9
+  },
+  {
+    "itemId": "diet-coke",
+    "category": "Drinks",
+    "count": 8
+  },
+  {
+    "itemId": "falafel-sandwich",
+    "category": "Manakish and Pies",
+    "count": 8
+  },
+  {
+    "itemId": "veggie-pizza-slice",
+    "category": "Pizza Slices",
+    "count": 8
+  },
+  {
+    "itemId": "chicken-pizza",
+    "category": "Pizza",
+    "count": 6
+  },
+  {
+    "itemId": "chicken-pizza-slice",
+    "category": "Pizza Slices",
+    "count": 6
+  },
+  {
+    "itemId": "combo-shish-taouk-and-shawarma-beef-plate",
+    "category": "Grills",
+    "count": 6
+  },
+  {
+    "itemId": "diet-pepsi",
+    "category": "Drinks",
+    "count": 6
+  },
+  {
+    "itemId": "fanta",
+    "category": "Drinks",
+    "count": 6
+  },
+  {
+    "itemId": "mexican-pizza-slice",
+    "category": "Pizza Slices",
+    "count": 6
+  },
+  {
+    "itemId": "redbull",
+    "category": "Drinks",
+    "count": 6
+  },
+  {
+    "itemId": "cheese-pie",
+    "category": "Manakish and Pies",
+    "count": 5
+  },
+  {
+    "itemId": "salad-bar-100g",
+    "category": "Sides",
+    "count": 5
+  },
+  {
+    "itemId": "perrier",
+    "category": "Drinks",
+    "count": 4
+  },
+  {
+    "itemId": "poutine-au-poulet",
+    "category": "Sides",
+    "count": 4
+  },
+  {
+    "itemId": "chicken-shawarma-trio",
+    "category": "Grills",
+    "count": 3
+  }
+]
