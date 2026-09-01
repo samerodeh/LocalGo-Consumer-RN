@@ -28,14 +28,26 @@ from .routers import account, goer, notify, orders, payments
 async def lifespan(app: FastAPI):
     # Embed the menu and FAQ into ChromaDB once at boot. Upserts, so a restart
     # after a menu edit refreshes the index and an unchanged menu costs nothing.
-    # A failure here must not take the service down: order dispatch and push
-    # don't need retrieval, and Goer degrades to the app's on-device assistant.
-    try:
-        from .goer.rag import build_index
+    #
+    # Skipped entirely when Goer has no API key: retrieval only feeds the
+    # chatbot's agents, which cannot answer without GROQ_API_KEY anyway. This is
+    # not just an optimization — the build downloads Chroma's ~80 MB ONNX
+    # embedder and holds the model in memory, which is enough to OOM a 512 MB
+    # free instance. An OOM is a SIGKILL, so the except below would NOT catch
+    # it: the process dies, the health check fails, and the platform keeps
+    # serving the previous build while the new code appears to have vanished.
+    #
+    # Checkout and order dispatch never touch retrieval — pricing reads its own
+    # committed app/menu_prices.json.
+    if not config.GOER_CONFIGURED:
+        print("[startup] Goer not configured — skipping RAG index build")
+    else:
+        try:
+            from .goer.rag import build_index
 
-        build_index()
-    except Exception as exc:
-        print(f"[startup] Goer RAG index unavailable ({type(exc).__name__}: {exc})")
+            build_index()
+        except Exception as exc:
+            print(f"[startup] Goer RAG index unavailable ({type(exc).__name__}: {exc})")
     yield
 
 
@@ -65,4 +77,15 @@ def health():
         "pushConfigured": bool(config.SUPABASE_SERVICE_ROLE_KEY),
         "goerConfigured": config.GOER_CONFIGURED,
         "goerModel": config.GOER_MODEL,
+        # Whether real payments are live. False means checkout silently runs in
+        # demo mode and takes no money — the single most important thing to be
+        # able to check on a deployed instance, and impossible to tell from the
+        # outside otherwise. Reports only that keys are present, never a key.
+        "stripeConfigured": config.STRIPE_CONFIGURED,
+        "stripeMode": (
+            "live" if config.STRIPE_SECRET_KEY.startswith("sk_live_")
+            else "test" if config.STRIPE_SECRET_KEY.startswith("sk_test_")
+            else "unset"
+        ),
+        "stripeWebhookConfigured": bool(config.STRIPE_WEBHOOK_SECRET),
     }
