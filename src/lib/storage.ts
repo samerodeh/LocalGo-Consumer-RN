@@ -102,23 +102,3 @@ export async function loadCards(email: string): Promise<PaymentCard[]> {
 export async function saveCards(email: string, cards: PaymentCard[]): Promise<void> {
   await writeJSON(KEYS.cards(email.toLowerCase()), cards);
 }
-
-// MARK: - Payment cards
-
-export async function loadCards(email: string): Promise<PaymentCard[]> {
-  return readJSON<PaymentCard[]>(KEYS.cards(email.toLowerCase()), []);
-}
-
-export async function saveCards(email: string, cards: PaymentCard[]): Promise<void> {
-  await writeJSON(KEYS.cards(email.toLowerCase()), cards);
-}
-
-// MARK: - Payment cards
-
-export async function loadCards(email: string): Promise<PaymentCard[]> {
-  return readJSON<PaymentCard[]>(KEYS.cards(email.toLowerCase()), []);
-}
-
-export async function saveCards(email: string, cards: PaymentCard[]): Promise<void> {
-  await writeJSON(KEYS.cards(email.toLowerCase()), cards);
-}

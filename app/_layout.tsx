@@ -1,13 +1,13 @@
 import { useEffect } from 'react';
-import { View } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as Linking from 'expo-linking';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { StripeProvider } from '@stripe/stripe-react-native';
+import { StripeProvider } from '../src/lib/stripeProvider';
 import { useFonts } from 'expo-font';
 import { ThemeProvider, useTheme } from '../src/theme/ThemeContext';
+import BootSplash from '../src/components/BootSplash';
 import { useAuthStore } from '../src/store/authStore';
 import { useOrdersStore } from '../src/store/ordersStore';
 import { useAddressStore } from '../src/store/addressStore';
@@ -92,7 +92,7 @@ function RootNavigator() {
   }, [beginPasswordRecovery, router]);
 
   if (!bootstrapped) {
-    return <View style={{ flex: 1, backgroundColor: colors.offWhite }} />;
+    return <BootSplash />;
   }
 
   return (
@@ -125,15 +125,18 @@ function RootNavigator() {
 }
 
 export default function RootLayout() {
-  const [fontsLoaded] = useFonts({
+  // The error half must not be dropped: useFonts leaves `loaded` false forever
+  // when a face fails, so gating on `loaded` alone turns any font problem into a
+  // permanent blank screen. Shipping with the system font beats shipping nothing.
+  const [fontsLoaded, fontError] = useFonts({
     'BarlowCondensed-Black': require('../assets/fonts/BarlowCondensed-Black.ttf'),
     'BarlowCondensed-ExtraBold': require('../assets/fonts/BarlowCondensed-ExtraBold.ttf'),
     'BarlowCondensed-Bold': require('../assets/fonts/BarlowCondensed-Bold.ttf'),
     'BarlowCondensed-SemiBold': require('../assets/fonts/BarlowCondensed-SemiBold.ttf'),
   });
 
-  if (!fontsLoaded) {
-    return <View style={{ flex: 1 }} />;
+  if ((!fontsLoaded && !fontError)) {
+    return <BootSplash />;
   }
 
   return (
