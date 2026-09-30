@@ -92,48 +92,11 @@ src/
   each driver's delivery progress lives in a driver-side `driver_orders` overlay table.
 - **Delivery-location gate** — checkout is impossible without a *verified* delivery location.
   `src/lib/deliveryLocation.ts` defines the rule (non-trivial street line + real geocoded
-  coordinates; (0,0) is the "never geocoded" sentinel) and is enforced in four places: the Cart
-  screen (blocks the confirm dialog, routes to the Address screen), `placeOrder()` (hard gate for
-  every entry point incl. Goer), `goerStore.stageOrder()` (Goer can't even stage a confirmation
-  card), and server-side in the backend's `POST /orders` (422). `app/address.tsx` guarantees the
+  coordinates; (0,0) is the "never geocoded" sentinel) and is enforced in three places: the Cart
+  screen (blocks the confirm dialog, routes to the Address screen), `placeOrder()` (hard gate),
+  and server-side in the backend's `POST /orders` (422). `app/address.tsx` guarantees the
   invariant at the source: saving an address geocodes it (Photon autocomplete, GPS, or a save-time
   lookup) and refuses saves that can't be resolved to coordinates.
-
-## Goer — the multi-agent ordering chatbot
-
-**Goer** is the in-app AI assistant (floating button, bottom-right of Home and Cart) that can do
-everything the UI can: browse the Al Taib menu, recommend, build the cart, set the tip, and run
-checkout — all from chat. Code lives in `src/goer/` (logic) + `src/components/goer/` (UI).
-
-- **Two brains, one toolset** — `send.ts` routes each user turn either to the **LLM loop**
-  (`agentLoop.ts` → `streamClient.ts` → the `goer-chat` edge function → Anthropic, streamed SSE) or
-  to the **offline rule-based NLU** (`localNLU.ts`: intent detection + fuzzy matching in
-  `menuIndex.ts`). Both drive the *same* client-side tool executors (`tools/executors.ts`), so
-  behavior is identical and the app demos fully offline. Transport failures downgrade to the NLU
-  mid-conversation (sticky per session, re-probes on next launch).
-- **Four specialists with visible handoffs** — Menu Concierge / Cart Manager / Checkout / Order
-  Tracker (`agents.ts`). Each has its own system prompt + restricted toolset (`tools/schemas.ts`)
-  over one shared history; a `handoff_to_agent` tool swaps the active agent and renders a divider
-  in the transcript. System prompts are rebuilt every call with live cart/tip/address state; the
-  full menu is compacted into the Concierge prompt (`compactMenuForPrompt`).
-- **Checkout safety invariant** — `stage_order_confirmation` only *stages* a snapshot
-  (`goerStore.stageOrder`) and renders `OrderConfirmationCard`; the ONLY code path that places an
-  order from chat is the card's Confirm button → `confirmStagedOrder()` → `src/lib/placeOrder.ts`
-  (the same pipeline `cart.tsx` uses). Duplicate taps no-op via the staged→placing status guard,
-  and a cart-hash check marks the card stale if the cart changed after staging.
-- **State & persistence** — `goerStore.ts` (zustand): transcript (`GoerMessage` discriminated
-  union: text, menu cards, cart summary, order confirmation, order status, quick replies, handoff,
-  system note), API history (trimmed to 24 messages, tool_results never orphaned), staged order,
-  chat tip/address. Persisted per user at `localgo.goer.<email>` like the other stores.
-- **LLM proxy** — `backend/app/routers/goer.py` (`POST /goer/chat` on the FastAPI backend): thin
-  SSE pass-through to Anthropic that holds `ANTHROPIC_API_KEY` (never in the client bundle), clamps
-  model/max_tokens/history, and rate-limits per JWT sub. Default model `claude-haiku-4-5`
-  (override with `GOER_MODEL` in `backend/.env`). It replaced the old Deno edge function
-  (`supabase/functions/goer-chat/` — kept only as reference, no longer called). Without a running
-  backend the app simply stays in offline-NLU mode; `EXPO_PUBLIC_GOER_FORCE_FALLBACK=1` forces it
-  for testing.
-- **Streaming on RN** — uses `expo/fetch` (WinterCG, SDK 52+) because RN's built-in fetch can't
-  expose `response.body`; the SSE parser is hand-rolled in `streamClient.ts`. No new dependencies.
 
 ## Notifications, the driver-accept timer, and chat media (as of 2026-07-18)
 
@@ -162,7 +125,7 @@ checkout — all from chat. Code lives in `src/goer/` (logic) + `src/components/
 **The backend code is Python/FastAPI** (`backend/` in this repo — one service backs this app AND
 `../LocalGODriverRN`). It replaced the TypeScript/Deno edge functions and the apps' direct
 PostgREST data access: order dispatch (`POST /orders`, with server-side delivery-location
-validation), the driver feed/claim/status endpoints, the Goer LLM proxy (`POST /goer/chat`), and
+validation), the driver feed/claim/status endpoints, and
 push notifications (`POST /notify`). Run it with `uvicorn app.main:app --port 8000` from
 `backend/` (Python **3.12** venv — 3.14 on this machine breaks httpx/asyncio with
 `No module named 'concurrent.futures.thread'`); see `backend/README.md`. Apps find it via

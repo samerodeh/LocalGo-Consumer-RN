@@ -9,7 +9,7 @@ def test_health_reports_service_configuration_without_secrets():
 
     assert response.status_code == 200
     assert response.json()["ok"] is True
-    assert set(response.json()) == {"ok", "supabaseConfigured", "pushConfigured", "goerConfigured"}
+    assert set(response.json()) == {"ok", "supabaseConfigured", "pushConfigured"}
 
 
 def test_bearer_and_jwt_helpers_parse_valid_values(driver_token):

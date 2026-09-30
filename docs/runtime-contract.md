@@ -19,7 +19,6 @@ database ownership required to run and deploy the LocalGo consumer safely.
 | `EXPO_PUBLIC_SUPABASE_URL` | Supabase project URL for Auth, realtime, and chat. |
 | `EXPO_PUBLIC_SUPABASE_ANON_KEY` | Supabase publishable/anon key used by the app. |
 | `EXPO_PUBLIC_API_URL` | HTTPS URL of the FastAPI service. Use the development machine's LAN IP rather than `localhost` on a physical device. |
-| `EXPO_PUBLIC_GOER_FORCE_FALLBACK` | Optional. Set to `1` to force Goer's offline-NLU fallback. |
 
 The EAS preview and production build profiles must receive the required
 `EXPO_PUBLIC_*` values. `.env.local` is intentionally not uploaded to EAS.
@@ -57,8 +56,6 @@ The EAS preview and production build profiles must receive the required
 | `SUPABASE_URL` | Supabase project URL. Required with the anon key for order endpoints. |
 | `SUPABASE_ANON_KEY` | Used by the backend's anonymous PostgREST operations. |
 | `SUPABASE_SERVICE_ROLE_KEY` | Enables push dispatch and customer-facing status mirroring. Never expose to the client. |
-| `ANTHROPIC_API_KEY` | Enables Goer's hosted LLM mode. Without it, Goer falls back to offline NLU. |
-| `GOER_MODEL` | Optional model override. Defaults to `claude-haiku-4-5`. |
 
 ## Data and migration ownership
 

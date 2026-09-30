@@ -1,5 +1,5 @@
-// Delivery-location validation, shared by every checkout entry point (Cart
-// screen, Goer's stage/confirm flow, and placeOrder itself). An address counts
+// Delivery-location validation for the checkout entry point (Cart
+// screen and placeOrder itself). An address counts
 // as a valid delivery location only when it has a real street line AND
 // verified coordinates (picked from an autocomplete suggestion, resolved by
 // geocoding, or captured from the device GPS) — a bare typed string that never

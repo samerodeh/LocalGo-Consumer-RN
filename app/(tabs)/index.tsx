@@ -22,8 +22,6 @@ import { useOrderTracking } from '../../src/store/useOrderTracking';
 import { usePendingOrders } from '../../src/store/usePendingOrders';
 import { OrderTrackingStack } from '../../src/components/OrderTrackingStack';
 import { PendingOrderStack } from '../../src/components/PendingOrderStack';
-// Goer chatbot disabled for now.
-// import { GoerFab } from '../../src/components/goer/GoerFab';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -123,7 +121,6 @@ export default function HomeScreen() {
           </View>
         )}
       </ScrollView>
-      {/* <GoerFab /> */}
     </SafeAreaView>
   );
 }

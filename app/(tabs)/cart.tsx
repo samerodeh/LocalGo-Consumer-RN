@@ -15,8 +15,6 @@ import { useAddressStore } from '../../src/store/addressStore';
 import { useAuthStore } from '../../src/store/authStore';
 import { placeOrder } from '../../src/lib/placeOrder';
 import { deliveryLocationProblem, isValidDeliveryLocation } from '../../src/lib/deliveryLocation';
-// Goer chatbot disabled for now.
-// import { GoerFab } from '../../src/components/goer/GoerFab';
 
 /** DoorDash-style tip presets, as a percentage of the food subtotal. */
 const TIP_PRESETS = [0, 15, 18, 20, 25] as const;
@@ -109,7 +107,6 @@ export default function CartScreen() {
           <Text style={styles.emptyTitle}>Your cart is empty</Text>
           <Text style={styles.emptyBody}>Add items from a restaurant to get started.</Text>
         </View>
-        {/* <GoerFab /> */}
       </SafeAreaView>
     );
   }
@@ -249,7 +246,6 @@ export default function CartScreen() {
       </View>
 
       {/* Lifted clear of the summary/checkout bar below. */}
-      {/* <GoerFab bottomOffset={210} /> */}
 
       <ConfirmModal
         visible={confirmVisible}

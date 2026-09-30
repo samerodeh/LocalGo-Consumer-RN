@@ -22,8 +22,8 @@ export interface PlaceOrderInput {
 export type PlaceOrderResult = { ok: true } | { ok: false; error: string };
 
 /**
- * The single checkout pipeline, shared by the Cart screen and Goer's in-chat
- * confirmation card: simulated payment, local order record (the source of
+ * The single checkout pipeline for the Cart screen:
+ * simulated payment, local order record (the source of
  * truth), best-effort dispatch to the driver feed, then cart clear. Uses
  * `getState()` so it's callable outside React components.
  */
@@ -31,7 +31,7 @@ export async function placeOrder(input: PlaceOrderInput): Promise<PlaceOrderResu
   const { lines, subtotal, deliveryFee, tip, total, deliveryAddress, customer } = input;
   if (lines.length === 0) return { ok: false, error: 'Your cart is empty.' };
 
-  // Hard gate, shared by the Cart screen and Goer: no order leaves the device
+  // Hard gate on the Cart screen: no order leaves the device
   // without a verified delivery location.
   const locationProblem = deliveryLocationProblem(deliveryAddress);
   if (locationProblem) return { ok: false, error: locationProblem };

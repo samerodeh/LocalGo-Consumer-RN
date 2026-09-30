@@ -19,7 +19,6 @@ healthcheckTimeout = 100
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 3
 
-# One replica on purpose: app/rate_limit.py counts in-process, so N replicas
-# would each keep their own window and multiply the effective Goer rate limit
-# by N. Scaling out means moving that counter to Postgres/Redis first.
+# One replica on purpose: any in-process counters reset on restart, so keep a
+# single instance until shared state moves to Postgres/Redis.
 numReplicas = 1

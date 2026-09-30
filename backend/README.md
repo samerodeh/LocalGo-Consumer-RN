@@ -1,8 +1,8 @@
 # LocalGO Backend (Python / FastAPI)
 
 The single backend service for **LocalGOConsumerRN** and **LocalGODriverRN**.
-It replaces the old TypeScript/Deno Supabase edge functions (`goer-chat`,
-`notify-push`) and the apps' direct Supabase data access. Supabase remains the
+It replaces the old TypeScript/Deno Supabase edge function (`notify-push`)
+and the apps' direct Supabase data access. Supabase remains the
 underlying Postgres + Auth provider; this service is the only backend *code*.
 
 ## Endpoints
@@ -14,7 +14,6 @@ underlying Postgres + Auth provider; this service is the only backend *code*.
 | GET    | `/orders/feed`         | driver   | Unclaimed + own orders merged with the driver's `driver_orders` overlay (camelCase, ready for the app) |
 | POST   | `/orders/{id}/accept`  | driver   | Atomic claim; `409` when another driver won the race; notifies the customer |
 | POST   | `/orders/{id}/status`  | driver   | Upserts the driver's private overlay status (declined / picked_up / delivered) |
-| POST   | `/goer/chat`           | consumer | SSE pass-through to the Anthropic Messages API (Goer's LLM brain) |
 | POST   | `/notify`              | both     | Push dispatch; recipients derived server-side from the order row |
 
 Driver endpoints require the driver's Supabase Auth access token as
@@ -40,9 +39,8 @@ EXPO_PUBLIC_API_URL=http://192.168.x.x:8000
 
 ## Environment
 
-See `.env.example`. Everything degrades gracefully: no `ANTHROPIC_API_KEY`
-means Goer stays in offline-NLU mode, no `SUPABASE_SERVICE_ROLE_KEY` means
-push notifications are skipped, no Supabase values means order endpoints
+See `.env.example`. Everything degrades gracefully: no `SUPABASE_SERVICE_ROLE_KEY`
+means push notifications are skipped, no Supabase values means order endpoints
 return 503 (the apps then behave exactly like demo mode).
 
 `app/config.py` calls `load_dotenv()` on `backend/.env`, which is a no-op when
@@ -86,7 +84,7 @@ Wire that URL into both apps the same way described below for Railway.
 ### Railway (once you're past testing)
 
 Config lives in `railway.toml`: `$PORT` binding, `/health` healthcheck, one
-replica (see the comment there — the rate limiter is in-process).
+replica (see the comment there).
 
 ```bash
 npm i -g @railway/cli
@@ -105,14 +103,12 @@ Set the env vars in the Railway dashboard (Variables tab) — the same keys as
 |----------|-----------|
 | `SUPABASE_URL` / `SUPABASE_ANON_KEY` | order endpoints (503 without) |
 | `SUPABASE_SERVICE_ROLE_KEY` | push + customer-facing status mirroring |
-| `ANTHROPIC_API_KEY` | Goer's LLM mode (offline NLU without) |
-| `GOER_MODEL` | optional override, defaults to `claude-haiku-4-5` |
 
 Verify, then wire the apps to the deployed URL:
 
 ```bash
 curl https://<name>.up.railway.app/health
-# {"ok":true,"supabaseConfigured":true,"pushConfigured":true,"goerConfigured":true}
+# {"ok":true,"supabaseConfigured":true,"pushConfigured":true}
 ```
 
 Put that URL in `EXPO_PUBLIC_API_URL` in **both** apps' `.env.local` *and* in
@@ -121,8 +117,7 @@ Put that URL in `EXPO_PUBLIC_API_URL` in **both** apps' `.env.local` *and* in
 `undefined`, and `dispatch.ts` silently no-ops. That is exactly how orders went
 missing from builds while working fine on localhost.
 
-⚠️ **Before exposing this publicly**, note that `POST /orders` and
-`POST /goer/chat` take no auth — fine on a laptop, but on a public URL anyone
-who finds it can inject orders into the driver feed or spend your Anthropic
-credits (`/goer/chat` is rate-limited to 20/min per IP, which a rotating
-caller defeats). See the security note in the root `CLAUDE.md`.
+⚠️ **Before exposing this publicly**, note that `POST /orders`
+takes no auth — fine on a laptop, but on a public URL anyone
+who finds it can inject orders into the driver feed.
+See the security note in the root `CLAUDE.md`.

@@ -2,12 +2,11 @@
 
 One service backs BOTH React Native apps:
   * LocalGOConsumerRN — POST /orders (dispatch, with server-side delivery-
-    location validation), POST /goer/chat (Anthropic SSE proxy), POST /notify.
+    location validation), POST /notify.
   * LocalGODriverRN   — GET /orders/feed, POST /orders/{id}/accept,
     POST /orders/{id}/status, POST /notify.
 
-It replaces the TypeScript/Deno Supabase edge functions (goer-chat,
-notify-push) and the apps' direct PostgREST data access. Supabase stays as the
+Supabase stays as the
 Postgres + Auth provider underneath; driver endpoints forward the caller's
 Supabase Auth JWT so every RLS policy applies unchanged.
 
@@ -18,7 +17,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from . import config
-from .routers import goer, notify, orders
+from .routers import notify, orders
 
 app = FastAPI(title="LocalGO Backend", version="1.0.0")
 
@@ -32,7 +31,6 @@ app.add_middleware(
 )
 
 app.include_router(orders.router)
-app.include_router(goer.router)
 app.include_router(notify.router)
 
 
@@ -42,6 +40,5 @@ def health():
         "ok": True,
         "supabaseConfigured": config.SUPABASE_CONFIGURED,
         "pushConfigured": bool(config.SUPABASE_SERVICE_ROLE_KEY),
-        "goerConfigured": bool(config.ANTHROPIC_API_KEY),
     }
 

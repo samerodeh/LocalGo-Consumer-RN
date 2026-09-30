@@ -12,8 +12,6 @@ import { useAuthStore } from '../src/store/authStore';
 import { useOrdersStore } from '../src/store/ordersStore';
 import { useAddressStore } from '../src/store/addressStore';
 import { usePaymentStore } from '../src/store/paymentStore';
-// Goer chatbot disabled for now.
-// import { useGoerStore } from '../src/goer/goerStore';
 import { parseAuthLink } from '../src/lib/authDeepLink';
 import {
   ensureNotificationPermission,
@@ -33,7 +31,6 @@ function RootNavigator() {
   const configureOrders = useOrdersStore((s) => s.configure);
   const configureAddresses = useAddressStore((s) => s.configure);
   const configureCards = usePaymentStore((s) => s.configure);
-  // const configureGoer = useGoerStore((s) => s.configure);
 
   useEffect(() => {
     restoreSession();
@@ -44,7 +41,6 @@ function RootNavigator() {
     configureOrders(currentEmail);
     configureAddresses(currentEmail);
     configureCards(currentEmail);
-    // configureGoer(currentEmail);
   }, [currentEmail, configureOrders, configureAddresses, configureCards]);
 
   // Ask for notification permission up front so in-app LOCAL alerts (order
